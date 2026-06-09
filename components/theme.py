@@ -1,309 +1,380 @@
 """
-CSS themes — pixel aesthetic, readable font sizes, hover effects.
+CSS themes — clean, professional dark UI with subtle monospace accents.
+Body text uses Inter (readable). Monospace only for formulas/code.
+Each theme is a single accent color on a dark base.
 """
 import streamlit as st
 
-# Shared base CSS injected on every theme (layout, nav boxes, hover effects)
 BASE_CSS = """
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* ── Typography ─────────────────────────────────────────────────────────── */
+/* ── Reset & base ────────────────────────────────────────────────── */
 html, body, [class*="css"] {
-    font-family: 'VT323', monospace !important;
-    font-size: 18px !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 15px !important;
     line-height: 1.7 !important;
 }
-h1 { font-family: 'Press Start 2P', monospace !important; font-size: 20px !important; letter-spacing: 2px; margin-bottom: 12px !important; }
-h2 { font-family: 'Press Start 2P', monospace !important; font-size: 15px !important; letter-spacing: 1px; margin-bottom: 8px !important; }
-h3 { font-family: 'Press Start 2P', monospace !important; font-size: 12px !important; margin-bottom: 6px !important; }
-p, li, span, .stMarkdown p, .stMarkdown li { font-size: 18px !important; line-height: 1.8 !important; }
-label, .stSelectbox label, .stTextInput label, .stTextArea label {
-    font-family: 'Press Start 2P', monospace !important;
-    font-size: 10px !important;
-}
-caption, .stCaption, small { font-size: 14px !important; opacity: 0.75; }
-
-/* ── Streamlit chrome cleanup ────────────────────────────────────────────── */
 #MainMenu, footer, header { visibility: hidden; }
-.block-container { padding-top: 1rem !important; max-width: 960px !important; }
+.block-container {
+    padding-top: 1.5rem !important;
+    padding-bottom: 2rem !important;
+    max-width: 900px !important;
+}
 [data-testid="stSidebar"] { display: none !important; }
 
-/* ── Top nav bar ─────────────────────────────────────────────────────────── */
-.desk-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 10px 0 14px;
-    border-bottom: 3px solid var(--accent);
-    margin-bottom: 18px;
-}
-.desk-nav-box {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    padding: 8px 12px;
-    background: var(--surface);
-    border: 2px solid var(--accent);
-    box-shadow: 3px 3px 0 var(--shadow);
-    color: var(--accent);
-    cursor: pointer;
-    transition: transform 0.08s, box-shadow 0.08s, background 0.08s;
-    white-space: nowrap;
-    user-select: none;
-    line-height: 1.4;
-}
-.desk-nav-box:hover {
-    transform: scale(1.12) translateY(-2px);
-    box-shadow: 5px 5px 0 var(--shadow);
-    background: var(--accent);
-    color: var(--bg);
-}
-.desk-nav-box.active {
-    background: var(--accent);
-    color: var(--bg);
-    box-shadow: 1px 1px 0 var(--shadow);
-    transform: translate(2px, 2px);
-}
+/* ── Headings ────────────────────────────────────────────────────── */
+h1 { font-size: 22px !important; font-weight: 600 !important;
+     letter-spacing: -0.3px; margin-bottom: 6px !important; }
+h2 { font-size: 18px !important; font-weight: 600 !important;
+     margin-bottom: 4px !important; }
+h3 { font-size: 15px !important; font-weight: 600 !important;
+     margin-bottom: 2px !important; }
+p, li { font-size: 15px !important; line-height: 1.75 !important; }
+label { font-size: 13px !important; font-weight: 500 !important; }
+small, .stCaption, caption { font-size: 13px !important; opacity: 0.6; }
 
-/* ── Buttons ─────────────────────────────────────────────────────────────── */
+/* ── Buttons ─────────────────────────────────────────────────────── */
 .stButton > button {
-    font-family: 'Press Start 2P', monospace !important;
-    font-size: 10px !important;
-    border-radius: 0 !important;
-    padding: 10px 16px !important;
-    background: var(--surface) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border-radius: 4px !important;
+    padding: 8px 16px !important;
+    background: transparent !important;
     color: var(--accent) !important;
-    border: 2px solid var(--accent) !important;
-    box-shadow: 3px 3px 0 var(--shadow) !important;
-    transition: transform 0.08s, box-shadow 0.08s !important;
+    border: 1px solid var(--border) !important;
+    transition: background 0.15s, border-color 0.15s !important;
+    box-shadow: none !important;
 }
 .stButton > button:hover {
-    background: var(--accent) !important;
-    color: var(--bg) !important;
-    box-shadow: 1px 1px 0 var(--shadow) !important;
-    transform: translate(2px, 2px) !important;
-}
-.stButton > button:active {
+    background: var(--accent-muted) !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+    transform: none !important;
     box-shadow: none !important;
-    transform: translate(3px, 3px) !important;
 }
 
-/* ── Inputs ──────────────────────────────────────────────────────────────── */
+/* ── Tab nav ─────────────────────────────────────────────────────── */
+.desk-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+.desk-user-info {
+    font-size: 13px;
+    color: var(--fg-muted);
+    font-weight: 500;
+}
+.desk-user-info strong { color: var(--fg); }
+
+/* st.tabs() overrides */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 0 !important;
+    border-bottom: 1px solid var(--border) !important;
+    background: transparent !important;
+}
+.stTabs [data-baseweb="tab"] {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: var(--fg-muted) !important;
+    padding: 8px 16px !important;
+    border-radius: 0 !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    background: transparent !important;
+    transition: color 0.15s !important;
+}
+.stTabs [data-baseweb="tab"]:hover { color: var(--fg) !important; }
+.stTabs [aria-selected="true"] {
+    color: var(--accent) !important;
+    border-bottom: 2px solid var(--accent) !important;
+    background: transparent !important;
+}
+.stTabs [data-baseweb="tab-panel"] { padding-top: 20px !important; }
+.stTabs [data-baseweb="tab-highlight"] { display: none !important; }
+
+/* ── Inputs ──────────────────────────────────────────────────────── */
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea,
 .stNumberInput > div > div > input {
-    font-family: 'VT323', monospace !important;
-    font-size: 18px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
     background: var(--surface) !important;
     color: var(--fg) !important;
-    border: 2px solid var(--border) !important;
-    border-radius: 0 !important;
-    padding: 8px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
 }
 .stSelectbox > div > div {
-    font-family: 'VT323', monospace !important;
-    font-size: 18px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
     background: var(--surface) !important;
-    border: 2px solid var(--border) !important;
-    border-radius: 0 !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 4px !important;
 }
 
-/* ── Lesson content ──────────────────────────────────────────────────────── */
+/* ── Lesson content ──────────────────────────────────────────────── */
 .lesson-why {
     padding: 14px 18px;
-    border-left: 4px solid var(--accent);
+    border-left: 3px solid var(--accent);
     background: var(--surface);
-    box-shadow: 3px 3px 0 var(--shadow);
-    margin-bottom: 16px;
-    font-size: 18px !important;
-    line-height: 1.8;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 20px;
+    font-size: 15px !important;
+    line-height: 1.7;
 }
+.lesson-why .why-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+.lesson-why .why-seat {
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin-top: 6px;
+}
+
+.concept-section { margin: 18px 0; }
+.concept-heading {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+}
+.concept-body { font-size: 15px !important; line-height: 1.8 !important; }
+
 .callout-interview_trap,
 .callout-key_insight,
 .callout-watch_out {
     padding: 14px 18px;
-    margin: 12px 0;
-    font-size: 17px !important;
-    line-height: 1.8;
+    border-radius: 0 4px 4px 0;
+    margin: 16px 0;
+    font-size: 14px !important;
+    line-height: 1.75;
 }
-.callout-interview_trap { border: 2px solid #e05252; box-shadow: 3px 3px 0 #600; background: #1a0808; }
-.callout-key_insight    { border: 2px solid #52c452; box-shadow: 3px 3px 0 #060; background: #081a08; }
-.callout-watch_out      { border: 2px solid #e0a030; box-shadow: 3px 3px 0 #640; background: #1a1208; }
-.callout-interview_trap strong,
-.callout-key_insight strong,
-.callout-watch_out strong {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    display: block;
-    margin-bottom: 8px;
+.callout-interview_trap { border-left: 3px solid #e05252; background: #1f0e0e; }
+.callout-key_insight    { border-left: 3px solid #4caf82; background: #0e1f14; }
+.callout-watch_out      { border-left: 3px solid #d4a017; background: #1f1a0e; }
+.callout-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
 }
+.callout-interview_trap .callout-label { color: #e05252; }
+.callout-key_insight    .callout-label { color: #4caf82; }
+.callout-watch_out      .callout-label { color: #d4a017; }
+
 .formula-box {
     background: var(--surface);
-    border: 2px solid var(--border);
-    box-shadow: 4px 4px 0 var(--shadow);
+    border: 1px solid var(--border);
+    border-radius: 4px;
     padding: 16px 20px;
-    margin: 12px 0;
-    font-size: 18px !important;
-    line-height: 1.9;
+    margin: 16px 0;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 14px !important;
+    line-height: 1.8;
 }
-.formula-box strong {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    display: block;
+.formula-label {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--accent);
     margin-bottom: 8px;
 }
+
+.worked-example {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin: 20px 0;
+}
+.worked-example-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+.worked-step {
+    display: flex;
+    gap: 12px;
+    margin: 10px 0;
+    font-size: 14px;
+    line-height: 1.7;
+}
+.worked-step-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 20px;
+    margin-top: 3px;
+}
+.worked-takeaway {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--fg-muted);
+    font-style: italic;
+}
+
 .reward-card {
-    border: 3px solid var(--accent);
-    box-shadow: 6px 6px 0 var(--shadow);
+    border: 1px solid var(--border);
+    border-radius: 6px;
     padding: 24px;
     text-align: center;
     background: var(--surface);
-    margin: 16px 0;
+    margin: 20px 0;
 }
-.reward-card h2 { font-size: 14px !important; margin-bottom: 10px !important; }
 
-/* ── Expanders ───────────────────────────────────────────────────────────── */
-.stExpander { border: 2px solid var(--border) !important; border-radius: 0 !important; }
-details summary { font-family: 'Press Start 2P', monospace !important; font-size: 10px !important; }
+/* ── Skill tree ──────────────────────────────────────────────────── */
+.track-header {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    padding: 8px 0 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+}
+.lesson-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 3px 0;
+    transition: background 0.1s;
+    cursor: pointer;
+}
+.lesson-row:hover { background: var(--surface); }
+.lesson-row.locked { opacity: 0.35; cursor: default; }
+.mastery-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
 
-/* ── Progress bar ────────────────────────────────────────────────────────── */
-.stProgress > div > div > div { border-radius: 0 !important; }
-
-/* ── Divider ─────────────────────────────────────────────────────────────── */
-hr { border-color: var(--border) !important; margin: 14px 0 !important; }
+/* ── Misc ────────────────────────────────────────────────────────── */
+hr { border: none; border-top: 1px solid var(--border) !important; margin: 16px 0 !important; }
+.stExpander { border: 1px solid var(--border) !important; border-radius: 4px !important; }
+details summary { font-size: 14px !important; font-weight: 500 !important; }
+.stProgress > div > div > div { border-radius: 2px !important; }
+.stAlert { border-radius: 4px !important; font-size: 14px !important; }
 """
 
-# Per-theme variable overrides
 THEME_VARS = {
     "default": """
-        :root, .stApp {
-            --bg:      #0d1117;
-            --surface: #161c27;
-            --border:  #2a3a5c;
-            --accent:  #4a90d9;
-            --shadow:  #1a3060;
-            --fg:      #d0e4f8;
+        :root {
+            --bg:          #0f1117;
+            --surface:     #171c27;
+            --border:      #252d3d;
+            --accent:      #4a8fe8;
+            --accent-muted:#1a2d4a;
+            --fg:          #e2e8f4;
+            --fg-muted:    #8898aa;
         }
-        .stApp {
-            background-color: #0d1117;
-            background-image:
-                linear-gradient(rgba(74,144,217,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(74,144,217,0.04) 1px, transparent 1px);
-            background-size: 28px 28px;
-        }
-        h1,h2,h3 { color: #7ab8f5; }
-        p, li, span, .stMarkdown p { color: #d0e4f8; }
+        .stApp { background-color: #0f1117; }
+        h1,h2,h3 { color: #e2e8f4; }
+        p, li, .stMarkdown p { color: #c8d6e8; }
     """,
 
     "bloomberg_theme": """
-        :root, .stApp {
-            --bg:      #000000;
-            --surface: #0a0600;
-            --border:  #ff6600;
-            --accent:  #ff6600;
-            --shadow:  #7a2000;
-            --fg:      #ffaa44;
+        :root {
+            --bg:          #0a0600;
+            --surface:     #120d00;
+            --border:      #2a1a00;
+            --accent:      #e87d2a;
+            --accent-muted:#1a0e00;
+            --fg:          #f0c080;
+            --fg-muted:    #7a5030;
         }
         .stApp {
-            background-color: #000;
+            background-color: #0a0600;
             background-image: repeating-linear-gradient(
                 0deg, transparent, transparent 3px,
-                rgba(255,102,0,0.04) 3px, rgba(255,102,0,0.04) 4px
+                rgba(232,125,42,0.025) 3px, rgba(232,125,42,0.025) 4px
             );
         }
-        h1,h2,h3 { color: #ff6600; text-transform: uppercase; }
-        p, li, span, .stMarkdown p { color: #ffaa44; }
-        .callout-interview_trap { border-color: #ff3333; background: #0d0000; }
-        .callout-key_insight    { border-color: #00dd00; background: #000d00; }
-        .callout-watch_out      { border-color: #ffcc00; background: #0d0a00; }
+        h1,h2,h3 { color: #f0c080; }
+        p, li, .stMarkdown p { color: #d4a060; }
+        .formula-box { font-family: 'JetBrains Mono', monospace !important; }
     """,
 
     "stardew_theme": """
-        :root, .stApp {
-            --bg:      #1e2e10;
-            --surface: #2a4018;
-            --border:  #8b6914;
-            --accent:  #ffe87a;
-            --shadow:  #0d1406;
-            --fg:      #f5e6c8;
+        :root {
+            --bg:          #1a2812;
+            --surface:     #223318;
+            --border:      #3a4e24;
+            --accent:      #8ab44a;
+            --accent-muted:#1e2e10;
+            --fg:          #e8f0d0;
+            --fg-muted:    #7a9050;
         }
-        .stApp {
-            background-color: #1e2e10;
-            background-image:
-                radial-gradient(circle, rgba(255,220,100,0.06) 1px, transparent 1px);
-            background-size: 22px 22px;
-        }
-        h1,h2,h3 { color: #ffe87a; text-shadow: 2px 2px 0 #3a2800; }
-        p, li, span, .stMarkdown p { color: #f5e6c8; }
-        .callout-interview_trap { border-color: #e05252; background: #1a0808; }
-        .callout-key_insight    { border-color: #7acc5a; background: #0a1a06; }
-        .callout-watch_out      { border-color: #ffd54f; background: #1a1406; }
+        .stApp { background-color: #1a2812; }
+        h1,h2,h3 { color: #e8f0d0; }
+        p, li, .stMarkdown p { color: #c8daa8; }
     """,
 
     "cherry_theme": """
-        :root, .stApp {
-            --bg:      #130810;
-            --surface: #1f0c1a;
-            --border:  #cc6080;
-            --accent:  #ff8fab;
-            --shadow:  #7a0030;
-            --fg:      #ffe0eb;
+        :root {
+            --bg:          #120810;
+            --surface:     #1c1018;
+            --border:      #2e1424;
+            --accent:      #d4608a;
+            --accent-muted:#1e0e18;
+            --fg:          #f0dce8;
+            --fg-muted:    #886070;
         }
-        .stApp {
-            background-color: #130810;
-            background-image:
-                radial-gradient(circle at 30% 40%, rgba(255,143,171,0.05) 0%, transparent 60%);
-        }
-        h1,h2,h3 { color: #ff8fab; text-shadow: 2px 2px 0 #5a0020; }
-        p, li, span, .stMarkdown p { color: #ffe0eb; }
-        .callout-interview_trap { border-color: #ff5577; background: #1a0810; }
-        .callout-key_insight    { border-color: #88cc99; background: #081810; }
-        .callout-watch_out      { border-color: #ffcc88; background: #1a1408; }
+        .stApp { background-color: #120810; }
+        h1,h2,h3 { color: #f0dce8; }
+        p, li, .stMarkdown p { color: #d8b8cc; }
     """,
 
     "midnight_theme": """
-        :root, .stApp {
-            --bg:      #080010;
-            --surface: #0e0020;
-            --border:  #6633cc;
-            --accent:  #00e5ff;
-            --shadow:  #220044;
-            --fg:      #d0c0f0;
+        :root {
+            --bg:          #080012;
+            --surface:     #10001e;
+            --border:      #201030;
+            --accent:      #7c4dff;
+            --accent-muted:#120820;
+            --fg:          #e0d8f8;
+            --fg-muted:    #6050a0;
         }
-        .stApp {
-            background-color: #080010;
-            background-image:
-                linear-gradient(rgba(102,51,204,0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
-            background-size: 24px 24px;
-        }
-        h1,h2,h3 { color: #00e5ff; text-shadow: 0 0 10px rgba(0,229,255,0.4); }
-        p, li, span, .stMarkdown p { color: #d0c0f0; }
-        .callout-interview_trap { border-color: #ff4488; background: #140010; }
-        .callout-key_insight    { border-color: #00ffbb; background: #001410; }
-        .callout-watch_out      { border-color: #ffee00; background: #100e00; }
+        .stApp { background-color: #080012; }
+        h1,h2,h3 { color: #e0d8f8; }
+        p, li, .stMarkdown p { color: #c0b8e0; }
     """,
 
     "gold_theme": """
-        :root, .stApp {
-            --bg:      #080600;
-            --surface: #120e00;
-            --border:  #7a5c00;
-            --accent:  #ffd700;
-            --shadow:  #3a2800;
-            --fg:      #eedda0;
+        :root {
+            --bg:          #0a0800;
+            --surface:     #141000;
+            --border:      #2a2000;
+            --accent:      #c8a428;
+            --accent-muted:#1a1400;
+            --fg:          #f0e8c0;
+            --fg-muted:    #806820;
         }
-        .stApp {
-            background-color: #080600;
-            background-image:
-                linear-gradient(rgba(200,160,0,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(200,160,0,0.05) 1px, transparent 1px);
-            background-size: 28px 28px;
-        }
-        h1,h2,h3 { color: #ffd700; text-shadow: 2px 2px 0 #3a2800, 0 0 8px rgba(255,215,0,0.2); }
-        p, li, span, .stMarkdown p { color: #eedda0; }
-        .callout-interview_trap { border-color: #ff8844; background: #140800; }
-        .callout-key_insight    { border-color: #aadd44; background: #081000; }
-        .callout-watch_out      { border-color: #ffd700; background: #100e00; }
+        .stApp { background-color: #0a0800; }
+        h1,h2,h3 { color: #f0e8c0; }
+        p, li, .stMarkdown p { color: #d8cc90; }
     """,
 }
 
@@ -326,39 +397,56 @@ def get_theme_name(theme_id: str) -> str:
     return THEMES.get(theme_id, THEMES["default"])["name"]
 
 
-def all_theme_ids() -> list:
+def all_theme_ids():
     return list(THEMES.keys())
 
 
-# ── HTML helpers ──────────────────────────────────────────────────────────────
+# ── HTML helpers ──────────────────────────────────────────────────────────
 
-def callout_html(variant: str, body: str) -> str:
-    icons = {
-        "interview_trap": "⚠ INTERVIEW TRAP",
-        "key_insight":    "★ KEY INSIGHT",
-        "watch_out":      "► WATCH OUT",
+def callout_html(variant: str, body: str, heading: str = "") -> str:
+    labels = {
+        "interview_trap": "Interview Trap",
+        "key_insight":    "Key Insight",
+        "watch_out":      "Watch Out",
     }
-    label = icons.get(variant, variant.upper())
-    return f'<div class="callout-{variant}"><strong>{label}</strong>{body}</div>'
+    label = labels.get(variant, variant.replace("_", " ").title())
+    heading_html = f"<div style='font-weight:600;margin-bottom:4px'>{heading}</div>" if heading else ""
+    return (f'<div class="callout-{variant}">'
+            f'<div class="callout-label">{label}</div>'
+            f'{heading_html}{body}</div>')
 
 
-def formula_html(label: str, expression: str, note: str = "") -> str:
-    note_html = f"<br><span style='font-size:14px;opacity:0.7'>{note}</span>" if note else ""
-    return f'<div class="formula-box"><strong>[ {label} ]</strong><code style="font-size:18px">{expression}</code>{note_html}</div>'
+def formula_html(label: str, body: str) -> str:
+    return (f'<div class="formula-box">'
+            f'<div class="formula-label">{label}</div>'
+            f'<div>{body}</div></div>')
 
 
 def why_html(why: str, in_the_seat: str = "") -> str:
-    seat = f'<br><span style="font-size:14px;opacity:0.65">► On the job: {in_the_seat}</span>' if in_the_seat else ""
-    return f'<div class="lesson-why"><strong style="font-family:\'Press Start 2P\',monospace;font-size:10px">★ WHY THIS MATTERS</strong><br><br>{why}{seat}</div>'
+    seat = (f'<div class="why-seat">On the job — {in_the_seat}</div>'
+            if in_the_seat else "")
+    return (f'<div class="lesson-why">'
+            f'<div class="why-label">Why this matters</div>'
+            f'<div>{why}</div>{seat}</div>')
 
 
 def reward_card_html(title: str, body: str) -> str:
-    return f'<div class="reward-card"><h2>★ {title} ★</h2><p>{body}</p></div>'
+    return (f'<div class="reward-card">'
+            f'<div style="font-weight:600;font-size:16px;margin-bottom:8px">{title}</div>'
+            f'<div style="font-size:14px;opacity:0.75">{body}</div></div>')
+
+
+def mastery_color(mastery: float) -> str:
+    if mastery >= 90: return "#4caf82"
+    elif mastery >= 70: return "#4a8fe8"
+    elif mastery >= 40: return "#d4a017"
+    elif mastery > 0:  return "#666"
+    return "#333"
 
 
 def mastery_badge(mastery: float) -> str:
-    if mastery >= 90: return "★"
-    elif mastery >= 70: return "◆"
+    if mastery >= 90: return "●"
+    elif mastery >= 70: return "●"
     elif mastery >= 40: return "●"
     elif mastery > 0:  return "○"
     return "🔒"

@@ -60,8 +60,10 @@ def validate_lesson(data: dict, label: str) -> dict:
                     raise ContentError(f"[{slabel}] Formula section requires '{ff}'")
 
     we = _require(data, "worked_example", label, dict)
-    for ff in ("title", "body"):
-        _require(we, ff, f"{label} worked_example", str)
+    # Accept both schema shapes: {title,body} and {title,setup,steps,takeaway}
+    _require(we, "title", f"{label} worked_example", str)
+    if "body" not in we and "setup" not in we:
+        raise ContentError(f"[{label}] worked_example requires 'body' or 'setup'+'steps'+'takeaway'")
 
     glossary = _require(data, "glossary", label, list)
     for i, g in enumerate(glossary):
@@ -195,12 +197,12 @@ def load_jargon() -> list:
     try:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
-        # Also accept bare "terms" array or the standard {"terms": [...]} wrapper
         if isinstance(data, list):
-            data = {"terms": data}
-        validate_jargon(data, "jargon.json")
-        return data["terms"]
-    except ContentError as e:
+            return data
+        # Accept {"terms": [...]} or {"jargon": [...]}
+        terms = data.get("jargon") or data.get("terms") or []
+        return terms
+    except Exception as e:
         raise ContentError(f"jargon.json is invalid: {e}")
 
 

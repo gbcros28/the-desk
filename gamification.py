@@ -32,13 +32,22 @@ TITLES = [
 ]
 
 SHOP_ITEMS = [
-    {"id": "streak_freeze",    "name": "Streak Freeze",     "cost": 50,  "description": "Protects your streak for one missed day.", "category": "consumable"},
-    {"id": "desk_plant",       "name": "Desk Plant",        "cost": 30,  "description": "A small succulent. Very professional.",     "category": "cosmetic"},
-    {"id": "extra_monitor",    "name": "Extra Monitor",     "cost": 80,  "description": "Two screens. You're serious now.",           "category": "cosmetic"},
-    {"id": "coffee_cup",       "name": "Coffee Cup",        "cost": 20,  "description": "The large is a tell.",                       "category": "cosmetic"},
-    {"id": "bloomberg_theme",  "name": "Bloomberg Theme",   "cost": 150, "description": "Terminal green. Ambiance included.",         "category": "theme"},
-    {"id": "vest",             "name": "The Vest",          "cost": 500, "description": "Earned. Not bought. (Actually bought.)",      "category": "cosmetic"},
-    {"id": "dark_theme",       "name": "Dark Mode",         "cost": 40,  "description": "For late-night modeling sessions.",          "category": "theme"},
+    # Consumables
+    {"id": "streak_freeze",   "name": "Streak Freeze",      "cost": 50,  "description": "Protects your streak for one missed day.",      "category": "consumable", "emoji": "❄️"},
+    # Desk cosmetics
+    {"id": "coffee_cup",      "name": "Coffee Cup",         "cost": 20,  "description": "The large is a tell.",                          "category": "cosmetic",   "emoji": "☕"},
+    {"id": "desk_plant",      "name": "Desk Plant",         "cost": 30,  "description": "A small succulent. Very professional.",         "category": "cosmetic",   "emoji": "🪴"},
+    {"id": "extra_monitor",   "name": "Extra Monitor",      "cost": 80,  "description": "Two screens. You're serious now.",              "category": "cosmetic",   "emoji": "🖥️"},
+    {"id": "vest",            "name": "The Vest",           "cost": 300, "description": "Earned. Not bought. (Actually bought.)",        "category": "cosmetic",   "emoji": "🧥"},
+    {"id": "rubber_duck",     "name": "Rubber Duck",        "cost": 15,  "description": "For debugging your models out loud.",           "category": "cosmetic",   "emoji": "🦆"},
+    {"id": "stress_ball",     "name": "Stress Ball",        "cost": 25,  "description": "Quarterly earnings season essential.",          "category": "cosmetic",   "emoji": "🔴"},
+    {"id": "framed_cert",     "name": "Framed CFA Cert",    "cost": 120, "description": "Three exams. One piece of paper. Worth it.",   "category": "cosmetic",   "emoji": "📜"},
+    # Themes
+    {"id": "bloomberg_theme", "name": "Bloomberg Terminal", "cost": 150, "description": "Black/orange, scanlines, all-caps. Iconic.",   "category": "theme",      "emoji": "🟠"},
+    {"id": "stardew_theme",   "name": "Stardew Farm",       "cost": 200, "description": "Warm pixels, earthy browns. Cozy finance.",    "category": "theme",      "emoji": "🌾"},
+    {"id": "cherry_theme",    "name": "Cherry Analyst",     "cost": 180, "description": "Blush pink pixel aesthetic. Soft but serious.", "category": "theme",      "emoji": "🌸"},
+    {"id": "midnight_theme",  "name": "Midnight Terminal",  "cost": 220, "description": "Deep purple, neon cyan. Cyberpunk pixel.",     "category": "theme",      "emoji": "🌃"},
+    {"id": "gold_theme",      "name": "Gold Tier",          "cost": 400, "description": "Black and gold. For when you've made it.",     "category": "theme",      "emoji": "🏆"},
 ]
 
 

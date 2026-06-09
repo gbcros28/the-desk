@@ -1,0 +1,19 @@
+{
+  "terms": [
+    {"term": "EBITDA", "definition": "Earnings Before Interest, Taxes, Depreciation, and Amortization. A proxy for operating cash flow widely used in valuation multiples (e.g., EV/EBITDA).", "track": "A"},
+    {"term": "EV", "definition": "Enterprise Value. Market cap + Net Debt + Minority Interest + Preferred Equity. Represents total firm value to all capital providers.", "track": "C"},
+    {"term": "DCF", "definition": "Discounted Cash Flow. A valuation method that projects free cash flows and discounts them back at the WACC to derive intrinsic value.", "track": "C"},
+    {"term": "WACC", "definition": "Weighted Average Cost of Capital. The blended required return of debt and equity holders, used as the discount rate in a DCF.", "track": "C"},
+    {"term": "LBO", "definition": "Leveraged Buyout. Acquisition financed primarily with debt, with equity returns driven by leverage, multiple expansion, and cash generation.", "track": "C"},
+    {"term": "Working Capital", "definition": "Current Assets minus Current Liabilities. An increase is a use of cash; a decrease is a source.", "track": "A"},
+    {"term": "Beta", "definition": "A measure of a stock's volatility relative to the market. Beta > 1 means more volatile than the market.", "track": "B"},
+    {"term": "Alpha", "definition": "Excess return above a benchmark. Generating positive alpha is the core mandate of active managers.", "track": "D"},
+    {"term": "Carry", "definition": "In credit: the yield earned by holding a bond. In PE: carried interest — the GP's share of fund profits (typically 20%).", "track": "G"},
+    {"term": "Covenant", "definition": "A debt contract restriction. Maintenance covenants require ongoing compliance; incurrence covenants only trigger on a new action.", "track": "G"},
+    {"term": "IRR", "definition": "Internal Rate of Return. The discount rate that makes NPV = 0. The primary return metric for PE and infrastructure investments.", "track": "C"},
+    {"term": "MOIC", "definition": "Multiple on Invested Capital. Total value / invested capital. Used alongside IRR — high MOIC with slow return = lower IRR.", "track": "C"},
+    {"term": "TEV", "definition": "Total Enterprise Value. Same as EV — often used interchangeably in deal contexts.", "track": "C"},
+    {"term": "NTM", "definition": "Next Twelve Months. Forward-looking metric using the next 12 months of estimates. Contrasted with LTM (last twelve months).", "track": "C"},
+    {"term": "Spread", "definition": "In fixed income: yield above a risk-free benchmark (e.g., Treasuries). A tighter spread = lower credit risk or higher demand.", "track": "G"}
+  ]
+}

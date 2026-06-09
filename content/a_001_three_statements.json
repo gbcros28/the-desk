@@ -1,0 +1,122 @@
+{
+  "id": "a_001_three_statements",
+  "title": "The Three Financial Statements",
+  "track": "A",
+  "track_name": "Accounting",
+  "unit": "A1",
+  "unit_name": "Financial Statements",
+  "why_it_matters": "Every AM interview starts here. If you can't link the three statements, you don't get past the first round.",
+  "in_the_seat": "Analysts rebuild these from scratch on day one of any new position.",
+  "prerequisites": [],
+  "concept": [
+    {
+      "type": "text",
+      "body": "Public companies report three core financial statements: the **Income Statement**, the **Balance Sheet**, and the **Cash Flow Statement**. Together they give a complete picture of a company's financial health."
+    },
+    {
+      "type": "text",
+      "body": "**Income Statement** — Reports revenue, expenses, and profit over a period (quarter or year). Key lines: Revenue → Gross Profit → EBITDA → EBIT → Net Income."
+    },
+    {
+      "type": "text",
+      "body": "**Balance Sheet** — A snapshot at a point in time. Assets = Liabilities + Equity. Key categories: Current Assets, PP&E, Goodwill on the asset side; Accounts Payable, Debt, Equity on the other."
+    },
+    {
+      "type": "text",
+      "body": "**Cash Flow Statement** — Reconciles net income to actual cash. Three sections: Operating (CFO), Investing (CFI), and Financing (CFF). CFO starts with net income and adds back non-cash items (depreciation, amortization)."
+    },
+    {
+      "type": "callout",
+      "variant": "key_insight",
+      "body": "Net Income ≠ Cash. A company can be profitable and still run out of cash (e.g., rapid growth consuming working capital). The cash flow statement is what tells you whether the business is actually generating cash."
+    },
+    {
+      "type": "callout",
+      "variant": "interview_trap",
+      "body": "Interviewers love to ask 'walk me through the three statements' as the opening question. They're testing whether you can link them — specifically: how does a change in one line item flow through all three."
+    },
+    {
+      "type": "formula",
+      "label": "Balance Sheet Identity",
+      "expression": "Assets = Liabilities + Shareholders' Equity",
+      "note": "This must always hold. If it doesn't, the model is broken."
+    },
+    {
+      "type": "formula",
+      "label": "Cash Flow from Operations (indirect method)",
+      "expression": "CFO = Net Income + D&A + Changes in Working Capital",
+      "note": "D&A is added back because it's non-cash. Working capital changes can be sources or uses of cash."
+    },
+    {
+      "type": "callout",
+      "variant": "watch_out",
+      "body": "Depreciation and amortization appear in two places: as an expense on the income statement (reducing EBIT) and as an add-back on the cash flow statement. Don't double-count."
+    }
+  ],
+  "worked_example": {
+    "title": "Linking the Statements",
+    "body": "Suppose a company reports $100 net income, $20 D&A, and working capital increases by $10 (a use of cash). CFO = $100 + $20 - $10 = $110. Ending cash on the balance sheet increases by $110 (assuming no investing or financing activity). Retained earnings on the balance sheet increase by $100 (net income). The $20 D&A expense has already reduced the asset base (lower PP&E) and the income statement (lower EBIT). Everything ties."
+  },
+  "glossary": [
+    {"term": "EBITDA", "definition": "Earnings Before Interest, Taxes, Depreciation, and Amortization. A proxy for operating cash flow, widely used in valuation multiples."},
+    {"term": "Working Capital", "definition": "Current Assets minus Current Liabilities. An increase is a use of cash; a decrease is a source."},
+    {"term": "D&A", "definition": "Depreciation and Amortization. Non-cash expenses that reduce reported earnings but not cash flow."},
+    {"term": "Retained Earnings", "definition": "Cumulative net income not paid out as dividends. Lives on the equity side of the balance sheet."},
+    {"term": "CFO / CFI / CFF", "definition": "Cash Flow from Operations / Investing / Financing. The three sections of the cash flow statement."}
+  ],
+  "questions": [
+    {
+      "id": "a001_q1",
+      "type": "mcq",
+      "prompt": "Which financial statement shows a company's assets, liabilities, and equity at a specific point in time?",
+      "choices": ["Income Statement", "Balance Sheet", "Cash Flow Statement", "Statement of Retained Earnings"],
+      "answer_index": 1,
+      "explanation": "The Balance Sheet is a snapshot at a date. The Income Statement and Cash Flow Statement cover a period (quarter/year).",
+      "tags": ["diagnostic", "accounting", "basics"]
+    },
+    {
+      "id": "a001_q2",
+      "type": "mcq",
+      "prompt": "A company reports $50M net income and $10M depreciation. Working capital increases by $5M. What is Cash Flow from Operations?",
+      "choices": ["$55M", "$65M", "$45M", "$60M"],
+      "answer_index": 0,
+      "explanation": "CFO = Net Income + D&A - Increase in Working Capital = $50 + $10 - $5 = $55M. Working capital increase is a use of cash.",
+      "tags": ["accounting", "cfo", "interview"]
+    },
+    {
+      "id": "a001_q3",
+      "type": "fill_blank",
+      "prompt": "Complete the balance sheet identity: Assets = Liabilities + ___",
+      "accepted": ["Shareholders' Equity", "Equity", "shareholders equity", "shareholder equity", "stockholders equity", "stockholders' equity"],
+      "explanation": "Assets = Liabilities + Shareholders' Equity is the fundamental accounting identity. It must always balance.",
+      "tags": ["accounting", "balance sheet", "diagnostic"]
+    },
+    {
+      "id": "a001_q4",
+      "type": "ordering",
+      "prompt": "Order these Income Statement lines from top to bottom (revenue to bottom line):",
+      "items": ["Revenue", "Gross Profit", "EBITDA", "EBIT", "Net Income"],
+      "explanation": "The income statement flows: Revenue → (minus COGS) → Gross Profit → (minus SG&A) → EBITDA → (minus D&A) → EBIT → (minus Interest & Taxes) → Net Income.",
+      "tags": ["accounting", "income statement"]
+    },
+    {
+      "id": "a001_q5",
+      "type": "free_response",
+      "prompt": "Walk me through the three financial statements and how they link together.",
+      "model_answer": "The Income Statement shows profitability over a period — Revenue down to Net Income. The Balance Sheet shows assets, liabilities, and equity at a point in time. The Cash Flow Statement reconciles Net Income to actual cash, starting with Net Income, adding back non-cash items like D&A, and adjusting for working capital changes. They link as follows: Net Income flows from the Income Statement into Retained Earnings on the Balance Sheet and into the top of the Cash Flow Statement. The ending cash balance on the CFS ties to the cash line on the Balance Sheet.",
+      "rubric": [
+        "Correctly identifies all three statements and their time orientation (period vs. snapshot)",
+        "Explains the CFO reconciliation: Net Income + D&A +/- Working Capital",
+        "Links Net Income → Retained Earnings on Balance Sheet",
+        "Links ending cash on CFS → cash on Balance Sheet",
+        "Mentions D&A as non-cash add-back"
+      ],
+      "explanation": "This is the canonical first interview question. The key is the linkage — specifically that Net Income flows through retained earnings to the balance sheet, and that cash from the CFS ties to the balance sheet.",
+      "tags": ["interview", "accounting", "walkthrough"]
+    }
+  ],
+  "completion_reward": {
+    "title": "Statements linked.",
+    "body": "You can now explain this to a first-year analyst without losing credibility. That puts you ahead of a surprising number of applicants."
+  }
+}

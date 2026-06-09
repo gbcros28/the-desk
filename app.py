@@ -94,42 +94,53 @@ user = storage.get_user(user_id)  # refresh after streak update
 theme = gamification.get_active_theme(user)
 apply_theme(theme)
 
-# --- Sidebar nav ---
-with st.sidebar:
-    st.markdown(f"**{user['name']}** · {user['title']}")
-    st.markdown(f"Lv {user['level']} · {user['xp']:,} XP · {user['bps']:,} bps · 🔥 {user['streak']}")
+# --- Top nav bar ---
+page = st.session_state.get("page", "tree")
+due  = scheduler.get_due_count(user_id)
 
-    due = scheduler.get_due_count(user_id)
-    if due > 0:
-        st.warning(f"📚 {due} due for review")
+NAV_PAGES = [
+    ("tree",      "SKILLS"),
+    ("review",    f"REVIEW{'  !' if due > 0 else ''}"),
+    ("interview", "MOCK INT"),
+    ("weak",      "WEAK SPOTS"),
+    ("jargon",    "JARGON"),
+    ("pitch",     "PITCH"),
+    ("calendar",  "CALENDAR"),
+    ("todo",      "TO-DO"),
+    ("profile",   "PROFILE"),
+    ("shop",      "SHOP"),
+    ("upload",    "+ CONTENT"),
+]
 
-    st.markdown("---")
-    pages = {
-        "tree":      "📚 Skill Tree",
-        "review":    "🔁 Daily Review",
-        "interview": "🎤 Interview Sim",
-        "weak":      "🎯 Weak Spots",
-        "jargon":    "📖 Jargon Deck",
-        "pitch":     "📝 Stock Pitch",
-        "calendar":  "📅 Calendar",
-        "todo":      "✅ To-Do List",
-        "profile":   "👤 Profile",
-        "shop":      "🛍 Shop",
-        "upload":    "➕ Add Content",
-    }
-    for page_key, label in pages.items():
-        if st.button(label, key=f"nav_{page_key}"):
-            st.session_state["page"] = page_key
-            st.rerun()
+# Render nav as clickable Streamlit buttons styled like boxes
+st.markdown(
+    f"""<div style="font-family:'Press Start 2P',monospace;font-size:10px;
+         color:var(--accent);letter-spacing:1px;margin-bottom:4px">
+         ► {user['name'].upper()} &nbsp;·&nbsp; {user['title'].upper()} &nbsp;·&nbsp;
+         LV {user['level']} &nbsp;·&nbsp; {user['xp']:,} XP &nbsp;·&nbsp;
+         {user['bps']:,} BPS &nbsp;·&nbsp; 🔥 {user['streak']}
+    </div>""",
+    unsafe_allow_html=True
+)
 
-    st.markdown("---")
-    if st.button("Switch profile"):
-        del st.session_state["user_id"]
-        st.session_state["page"] = "login"
+# Build one row of buttons
+nav_cols = st.columns(len(NAV_PAGES))
+for col, (pkey, label) in zip(nav_cols, NAV_PAGES):
+    active_style = "background:var(--accent);color:var(--bg);" if pkey == page else ""
+    # Use a regular Streamlit button; CSS handles hover
+    if col.button(label, key=f"nav_{pkey}"):
+        st.session_state["page"] = pkey
         st.rerun()
 
+st.markdown('<hr style="margin:4px 0 16px">', unsafe_allow_html=True)
+
+# Switch profile link
+if st.button("↩ SWITCH PROFILE", key="switch_profile"):
+    del st.session_state["user_id"]
+    st.session_state["page"] = "login"
+    st.rerun()
+
 # --- Placement diagnostic on first launch ---
-page = st.session_state.get("page", "tree")
 if page not in ("login",) and should_show_placement(user_id):
     page = "placement"
     st.session_state["page"] = "placement"

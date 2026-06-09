@@ -17,19 +17,29 @@ def render_skill_tree(track_tree: dict, user_id: int, lessons: dict):
                     prereqs = lesson.get("prerequisites", [])
                     prereqs_met = scheduler.prerequisites_met(user_id, prereqs)
                     ldata = lp.get(lid, {})
-                    mastery = ldata.get("mastery", 0.0)
-                    completed = ldata.get("completed", 0)
+                    mastery   = ldata.get("mastery", 0.0)
+                    completed = bool(ldata.get("completed", 0))
 
-                    badge = mastery_badge(mastery)
                     if not prereqs_met:
-                        st.markdown(f"🔒 ~~{lesson['title']}~~ *(locked)*")
+                        st.markdown(
+                            f'<div style="opacity:0.45;margin:4px 0">🔒 '
+                            f'<span style="text-decoration:line-through">{lesson["title"]}</span>'
+                            f' <span style="font-size:12px">· Complete prerequisites first</span>'
+                            f'</div>',
+                            unsafe_allow_html=True
+                        )
                     else:
-                        label = f"{badge} {lesson['title']}"
-                        if mastery > 0:
-                            label += f" — {mastery:.0f}%"
+                        badge = mastery_badge(mastery)
+                        if completed:
+                            label = f"{badge} {lesson['title']} — {mastery:.0f}%"
+                        else:
+                            label = f"▶ {lesson['title']}"
                         if st.button(label, key=f"tree_{lid}"):
+                            # Clear any stale "done" state so lesson starts fresh
+                            stale_key = f"lesson_{lid}"
+                            if st.session_state.get(stale_key, {}).get("phase") == "done":
+                                del st.session_state[stale_key]
                             st.session_state["active_lesson"] = lid
-                            st.session_state["page"] = "lesson"
                             st.rerun()
                 st.markdown("")
 

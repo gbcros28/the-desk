@@ -77,12 +77,31 @@ def get_lesson_mastery(user_id: int, lesson_id: str, question_ids: list) -> floa
     return round(raw, 1)
 
 
-def update_lesson_mastery(user_id: int, lesson_id: str, question_ids: list):
+def update_lesson_mastery(user_id: int, lesson_id: str, question_ids: list,
+                          force_complete: bool = False):
     mastery = get_lesson_mastery(user_id, lesson_id, question_ids)
     lp = storage.get_lesson_progress(user_id, lesson_id)
-    completed = lp["completed"] if lp else (mastery >= MASTERY_THRESHOLD)
+    # A lesson is "completed" (unlocks dependents) once the user has gone
+    # through all questions at least once OR previously completed it.
+    if force_complete:
+        completed = True
+    elif lp:
+        completed = bool(lp["completed"])
+    else:
+        completed = mastery >= MASTERY_THRESHOLD
     storage.upsert_lesson_progress(user_id, lesson_id, completed, mastery)
     return mastery
+
+
+def mark_lesson_complete(user_id: int, lesson_id: str, question_ids: list):
+    """Called exactly once when a user finishes all questions in a session."""
+    update_lesson_mastery(user_id, lesson_id, question_ids, force_complete=True)
+
+
+def is_completed(user_id: int, lesson_id: str) -> bool:
+    """True once the user has finished all questions at least once."""
+    lp = storage.get_lesson_progress(user_id, lesson_id)
+    return bool(lp and lp.get("completed"))
 
 
 def is_mastered(user_id: int, lesson_id: str) -> bool:
@@ -93,8 +112,9 @@ def is_mastered(user_id: int, lesson_id: str) -> bool:
 
 
 def prerequisites_met(user_id: int, prereqs: list) -> bool:
+    """Prereqs are satisfied as soon as each required lesson is completed once."""
     for pid in prereqs:
-        if not is_mastered(user_id, pid):
+        if not is_completed(user_id, pid):
             return False
     return True
 

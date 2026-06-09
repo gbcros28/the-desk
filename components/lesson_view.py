@@ -12,11 +12,18 @@ def render_lesson(lesson: dict, user_id: int):
     lid = lesson["id"]
     session_key = f"lesson_{lid}"
 
+    # If the lesson was previously completed (state["phase"] == "done" but
+    # user navigated away and came back), reset it so they can re-do it.
+    existing = st.session_state.get(session_key, {})
+    if existing.get("phase") == "done":
+        del st.session_state[session_key]
+
     if session_key not in st.session_state:
         st.session_state[session_key] = {
             "phase": "content",
             "q_index": 0,
             "results": [],
+            "awarded": False,
         }
 
     state = st.session_state[session_key]
@@ -39,6 +46,12 @@ def render_lesson(lesson: dict, user_id: int):
         questions = lesson["questions"]
         idx = state["q_index"]
         if idx >= len(questions):
+            # All questions answered — award completion exactly once
+            if not state["awarded"]:
+                gamification.award_lesson_complete(user_id)
+                question_ids = [q["id"] for q in questions]
+                scheduler.mark_lesson_complete(user_id, lid, question_ids)
+                state["awarded"] = True
             state["phase"] = "done"
             st.rerun()
             return
@@ -48,14 +61,14 @@ def render_lesson(lesson: dict, user_id: int):
         answered, correct, outcome = render_question(q, key_prefix=f"{lid}_{idx}")
 
         if answered:
-            state["results"].append({
-                "qid": q["id"], "correct": correct, "outcome": outcome
-            })
-            xp, bps = gamification.award_question(
-                user_id,
-                first_try=(idx == 0 or state["results"][-2]["correct"] if len(state["results"]) > 1 else True),
-                correct=correct
-            )
+            # Only record the result the first time this question is answered
+            already_recorded = any(r["qid"] == q["id"] for r in state["results"])
+            if not already_recorded:
+                state["results"].append({
+                    "qid": q["id"], "correct": correct, "outcome": outcome
+                })
+                gamification.award_question(user_id, correct=correct)
+
             if st.button("Continue →", key=f"{lid}_next_{idx}"):
                 _clear_question_state(q["id"], f"{lid}_{idx}")
                 state["q_index"] += 1
@@ -164,9 +177,9 @@ def _render_completion(lesson: dict, user_id: int, results: list):
     correct = sum(1 for r in results if r["correct"])
     acc     = int(correct / total * 100) if total else 0
 
-    gamification.award_lesson_complete(user_id)
+    # Mastery is already recorded; just read it back for display
     question_ids = [q["id"] for q in lesson["questions"]]
-    mastery = scheduler.update_lesson_mastery(user_id, lesson["id"], question_ids)
+    mastery = scheduler.get_lesson_mastery(user_id, lesson["id"], question_ids)
 
     cr = lesson.get("completion_reward", {})
     title = cr.get("title") or cr.get("copy") or "Lesson complete."
@@ -185,6 +198,18 @@ def _render_completion(lesson: dict, user_id: int, results: list):
         from rewards import get_reward_card
         card = get_reward_card("lesson_first")
         st.info(f"**{card['title']}** — {card['body']}")
+
+    st.markdown("---")
+    col_a, col_b = st.columns([1, 3])
+    with col_a:
+        if st.button("← Back to skill tree", key=f"done_back_{lesson['id']}"):
+            # Clear this lesson's state so a revisit starts fresh
+            key = f"lesson_{lesson['id']}"
+            if key in st.session_state:
+                del st.session_state[key]
+            if "active_lesson" in st.session_state:
+                del st.session_state["active_lesson"]
+            st.rerun()
 
 
 def _clear_question_state(question_id: str, prefix: str):

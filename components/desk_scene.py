@@ -1,93 +1,302 @@
-"""Pixel desk scene — renders via st.markdown with unsafe_allow_html."""
+"""
+Pixel art desk scene — SVG-based, scales to full container width.
+Character, desk, monitor, and items all rendered as pixel art rectangles.
+"""
 import streamlit as st
 import gamification
 
-SCENE_PALETTES = {
-    "default":         {"bg": "#0f1117", "surface": "#171c27", "border": "#4a8fe8", "shadow": "#1a3060", "fg": "#7ab8f5", "screen_bg": "#050a14", "screen_fg": "#4a8fe8"},
-    "bloomberg_theme": {"bg": "#0a0600", "surface": "#120d00", "border": "#e87d2a", "shadow": "#7a2000", "fg": "#f0c080", "screen_bg": "#050300", "screen_fg": "#e87d2a"},
-    "stardew_theme":   {"bg": "#1a2812", "surface": "#223318", "border": "#8ab44a", "shadow": "#0d1406", "fg": "#e8f0d0", "screen_bg": "#141e0a", "screen_fg": "#8ab44a"},
-    "cherry_theme":    {"bg": "#120810", "surface": "#1c1018", "border": "#d4608a", "shadow": "#7a0030", "fg": "#f0dce8", "screen_bg": "#0e0610", "screen_fg": "#d4608a"},
-    "midnight_theme":  {"bg": "#080012", "surface": "#10001e", "border": "#7c4dff", "shadow": "#220044", "fg": "#e0d8f8", "screen_bg": "#060008", "screen_fg": "#00e5ff"},
-    "gold_theme":      {"bg": "#0a0800", "surface": "#141000", "border": "#c8a428", "shadow": "#3a2800", "fg": "#f0e8c0", "screen_bg": "#080600", "screen_fg": "#c8a428"},
+# ── Palette per theme ──────────────────────────────────────────────────────
+PALETTES = {
+    "default":         {"bg": "#0f1117", "floor": "#171c27", "desk": "#1e2a3a", "desk_top": "#253346",
+                        "screen": "#050e1a", "screen_glow": "#4a8fe8", "border": "#4a8fe8",
+                        "suit": "#1e3a6e", "pants": "#152a50", "shirt": "#e8eef8",
+                        "tie": "#c0392b", "skin": "#f5c2a0", "hair": "#2d1b0e",
+                        "shoe": "#141210", "wall": "#0d1420"},
+
+    "bloomberg_theme": {"bg": "#0a0600", "floor": "#120d00", "desk": "#1a1000", "desk_top": "#221500",
+                        "screen": "#000", "screen_glow": "#e87d2a", "border": "#e87d2a",
+                        "suit": "#1a0e00", "pants": "#100a00", "shirt": "#f0c080",
+                        "tie": "#e87d2a", "skin": "#f5c2a0", "hair": "#2d1b0e",
+                        "shoe": "#0a0800", "wall": "#070400"},
+
+    "stardew_theme":   {"bg": "#1a2812", "floor": "#223318", "desk": "#4a3520", "desk_top": "#5a4228",
+                        "screen": "#0a1406", "screen_glow": "#8ab44a", "border": "#8ab44a",
+                        "suit": "#2a4a20", "pants": "#1e3818", "shirt": "#e8f0d0",
+                        "tie": "#c8a428", "skin": "#f5c2a0", "hair": "#5a3010",
+                        "shoe": "#1a1008", "wall": "#141e0c"},
+
+    "cherry_theme":    {"bg": "#120810", "floor": "#1c1018", "desk": "#2a1020", "desk_top": "#341428",
+                        "screen": "#0a0510", "screen_glow": "#d4608a", "border": "#d4608a",
+                        "suit": "#2a1040", "pants": "#1e0c30", "shirt": "#f8e0ec",
+                        "tie": "#d4608a", "skin": "#f5c2a0", "hair": "#2d1b0e",
+                        "shoe": "#100810", "wall": "#0e0610"},
+
+    "midnight_theme":  {"bg": "#080012", "floor": "#10001e", "desk": "#180828", "desk_top": "#200a34",
+                        "screen": "#04000a", "screen_glow": "#00e5ff", "border": "#7c4dff",
+                        "suit": "#1a0840", "pants": "#12063a", "shirt": "#d0c8f8",
+                        "tie": "#7c4dff", "skin": "#f5c2a0", "hair": "#2d1b0e",
+                        "shoe": "#0a0818", "wall": "#060010"},
+
+    "gold_theme":      {"bg": "#0a0800", "floor": "#141000", "desk": "#2a1e08", "desk_top": "#342610",
+                        "screen": "#060400", "screen_glow": "#c8a428", "border": "#c8a428",
+                        "suit": "#1a1400", "pants": "#120e00", "shirt": "#f0e8c0",
+                        "tie": "#c8a428", "skin": "#f5c2a0", "hair": "#2d1b0e",
+                        "shoe": "#0e0c00", "wall": "#080600"},
 }
 
-SCREEN_LABELS = {
-    "default": "📈", "bloomberg_theme": "BBRG", "stardew_theme": "📊",
-    "cherry_theme": "✿", "midnight_theme": "◈", "gold_theme": "◎",
-}
+# ── Pixel art definitions (row strings, 1 char = 1 pixel) ─────────────────
+# Key: . = transparent
+
+CHAR_BODY = [
+    # 12 wide x 22 tall — finance character
+    "....HHHHHH..",  # 0  hair
+    "...HHHHHHHH.",  # 1  hair
+    "...HSSSSSSSH.",  # 2  forehead
+    "...HSEESSEEH.",  # 3  eyes
+    "...HSSSSSSSH.",  # 4  face
+    "...HSSMMSSSH.",  # 5  mouth
+    "....SSTTTSS..",  # 6  neck + tie
+    "..WWNNTTNNNW.",  # 7  collar
+    "..NNNNTTNNN..",  # 8  upper suit
+    "..NNNNTTNNN..",  # 9  suit
+    "..NNNNTTNNN..",  # 10 suit
+    "..NNNNNNNN..",   # 11 suit lower (no tie)
+    "..NNNNNNNN..",   # 12 suit hem
+    "...GGGGGGG..",   # 13 pants
+    "...GGGGGGG..",   # 14 pants
+    "...GGG.GGG..",   # 15 legs split
+    "...GGG.GGG..",   # 16 legs
+    "...GGG.GGG..",   # 17 legs
+    "...KKK.KKK..",   # 18 shoes
+    "..KKKK.KKKK.",   # 19 shoes
+]
+
+CHAR_VEST = [
+    # Same but with vest (darker suit, different collar)
+    "....HHHHHH..",
+    "...HHHHHHHH.",
+    "...HSSSSSSSH.",
+    "...HSEESSEEH.",
+    "...HSSSSSSSH.",
+    "...HSSMMSSSH.",
+    "....SSTTTSS..",
+    "..VVNNTTNNNV.",
+    "..VVVVTTVVV..",
+    "..VVVVTTVVV..",
+    "..VVVVTTVVV..",
+    "..VVVVVVVV..",
+    "..VVVVVVVV..",
+    "...GGGGGGG..",
+    "...GGGGGGG..",
+    "...GGG.GGG..",
+    "...GGG.GGG..",
+    "...GGG.GGG..",
+    "...KKK.KKK..",
+    "..KKKK.KKKK.",
+]
+
+MONITOR_ART = [
+    # 10 wide x 7 tall
+    "MMMMMMMMMM",
+    "MSSSSSSSM.",
+    "MSSSSSSSM.",
+    "MSSSSSSSM.",
+    "MMMMMMMMMM",
+    "....MMM...",
+    "...MMMMM..",
+]
+
+MONITOR2_ART = [
+    "MMMMMMMM",
+    "MSSSSSSM",
+    "MSSSSSSM",
+    "MSSSSSSM",
+    "MMMMMMMM",
+    "...MMM..",
+    "..MMMMM.",
+]
+
+COFFEE_ART = [
+    ".CCC.",
+    "CLLC.",
+    "CLLC.",
+    ".CCC.",
+    ".BBB.",
+]
+
+PLANT_ART = [
+    # 5 wide x 6 tall
+    ".GGG.",
+    "GGGGG",
+    ".GGG.",
+    "..S..",
+    "..S..",
+    ".PPP.",
+]
+
+DUCK_ART = [
+    ".YYY.",
+    "YYYYO",
+    ".YYY.",
+    "..Y..",
+]
+
+
+def _px(grid, colors, scale, ox=0, oy=0):
+    """Convert a pixel art grid to SVG rect strings."""
+    rects = []
+    for y, row in enumerate(grid):
+        for x, ch in enumerate(row):
+            if ch == "." or ch not in colors:
+                continue
+            rx = (ox + x) * scale
+            ry = (oy + y) * scale
+            rects.append(
+                f'<rect x="{rx}" y="{ry}" width="{scale}" height="{scale}" fill="{colors[ch]}"/>'
+            )
+    return "".join(rects)
 
 
 def render_desk_scene(user: dict):
     equipped = gamification.get_equipped(user)
     owned    = gamification.get_owned_cosmetics(user)
     theme    = equipped.get("theme", "default")
-    p        = SCENE_PALETTES.get(theme, SCENE_PALETTES["default"])
+    p        = PALETTES.get(theme, PALETTES["default"])
     level    = user.get("level", 1)
     title    = user.get("title", "Intern")
     streak   = user.get("streak", 0)
-    scr      = SCREEN_LABELS.get(theme, "📈")
 
-    # Character
-    if "vest" in owned and equipped.get("cosmetic") == "vest":
-        char = "🧑‍💼"
-    elif level >= 8:
-        char = "👔"
-    elif level >= 5:
-        char = "🧑‍💻"
-    else:
-        char = "🧒"
+    use_vest = "vest" in owned and equipped.get("cosmetic") == "vest"
+    char_grid = CHAR_VEST if use_vest else CHAR_BODY
 
-    # Monitor HTML
-    def mon(w=72):
-        return (
-            f'<div style="display:inline-flex;flex-direction:column;align-items:center;margin:0 4px">'
-            f'<div style="width:{w}px;height:46px;background:{p["screen_bg"]};'
-            f'border:2px solid {p["border"]};'
-            f'display:flex;align-items:center;justify-content:center;'
-            f'font-size:9px;color:{p["screen_fg"]}">{scr}</div>'
-            f'<div style="width:14px;height:4px;background:{p["border"]};opacity:0.5"></div>'
-            f'<div style="width:32px;height:3px;background:{p["shadow"]}"></div>'
-            f'</div>'
+    # ── Scene dimensions (virtual pixels, scale applied later) ─────────────
+    # viewBox units — scene is 96 wide x 60 tall virtual pixels
+    VW, VH = 96, 62
+    S = 6   # px per virtual pixel → SVG = 576 x 372
+
+    # Layout positions (virtual px)
+    FLOOR_Y   = 46   # desk surface top
+    DESK_H    = 10
+    CHAR_X    = 4    # character left edge
+    CHAR_Y    = 20   # character top (sits behind desk)
+    MON_X     = 30   # monitor left edge
+    MON_Y     = 28   # monitor top (on desk)
+    MON2_X    = 52
+    ITEMS_Y   = FLOOR_Y + 1   # items on desk surface
+
+    # ── Background ─────────────────────────────────────────────────────────
+    bg_rects = (
+        # wall
+        f'<rect x="0" y="0" width="{VW*S}" height="{FLOOR_Y*S}" fill="{p["wall"]}"/>'
+        # floor/desk surface
+        f'<rect x="0" y="{FLOOR_Y*S}" width="{VW*S}" height="{DESK_H*S}" fill="{p["desk"]}"/>'
+        # desk top highlight
+        f'<rect x="0" y="{FLOOR_Y*S}" width="{VW*S}" height="{2*S}" fill="{p["desk_top"]}"/>'
+        # floor below desk
+        f'<rect x="0" y="{(FLOOR_Y+DESK_H)*S}" width="{VW*S}" height="{(VH-FLOOR_Y-DESK_H)*S}" fill="{p["floor"]}"/>'
+    )
+
+    # ── Character ──────────────────────────────────────────────────────────
+    vest_color = "#3a2a0a" if theme == "gold_theme" else "#2a1a30"
+    char_colors = {
+        "H": p["hair"], "S": p["skin"], "E": "#1a1a1a", "M": "#8a4030",
+        "N": p["suit"],  "W": p["shirt"], "T": p["tie"],
+        "G": p["pants"], "K": p["shoe"],  "V": vest_color,
+    }
+    char_svg = _px(char_grid, char_colors, S, CHAR_X, CHAR_Y)
+
+    # ── Monitor(s) ─────────────────────────────────────────────────────────
+    mon_colors = {"M": p["border"], "S": p["screen"]}
+
+    # Screen content — small glow lines
+    scr_glow = (
+        f'<rect x="{(MON_X+1)*S}" y="{(MON_Y+1)*S}" width="{6*S}" height="{S//2}" fill="{p["screen_glow"]}" opacity="0.7"/>'
+        f'<rect x="{(MON_X+1)*S}" y="{(MON_Y+2)*S}" width="{4*S}" height="{S//2}" fill="{p["screen_glow"]}" opacity="0.4"/>'
+        f'<rect x="{(MON_X+1)*S}" y="{(MON_Y+3)*S}" width="{5*S}" height="{S//2}" fill="{p["screen_glow"]}" opacity="0.5"/>'
+    )
+    mon_svg = _px(MONITOR_ART, mon_colors, S, MON_X, MON_Y) + scr_glow
+
+    mon2_svg = ""
+    if "extra_monitor" in owned:
+        scr2_glow = (
+            f'<rect x="{(MON2_X+1)*S}" y="{(MON_Y+1)*S}" width="{4*S}" height="{S//2}" fill="{p["screen_glow"]}" opacity="0.6"/>'
+            f'<rect x="{(MON2_X+1)*S}" y="{(MON_Y+2)*S}" width="{3*S}" height="{S//2}" fill="{p["screen_glow"]}" opacity="0.35"/>'
+        )
+        mon2_svg = _px(MONITOR2_ART, mon_colors, S, MON2_X, MON_Y) + scr2_glow
+
+    # ── Desk items ─────────────────────────────────────────────────────────
+    items_svg = ""
+    ix = 74  # starting x for items (right side of desk)
+
+    # Keyboard (always present) — simple pixel block
+    kb_color = p.get("desk_top", "#253346")
+    hl_color = p.get("screen_glow", "#4a8fe8")
+    items_svg += (
+        f'<rect x="{(MON_X)*S}" y="{(FLOOR_Y+3)*S}" width="{8*S}" height="{2*S}" fill="{kb_color}"/>'
+        f'<rect x="{(MON_X+1)*S}" y="{(FLOOR_Y+3)*S}" width="{S//2}" height="{S//2}" fill="{hl_color}" opacity="0.5"/>'
+        f'<rect x="{(MON_X+2)*S}" y="{(FLOOR_Y+3)*S}" width="{S//2}" height="{S//2}" fill="{hl_color}" opacity="0.5"/>'
+    )
+
+    if "coffee_cup" in owned:
+        cc = {"C": "#8a6040", "L": "#c8a060", "B": "#4a3020"}
+        items_svg += _px(COFFEE_ART, cc, S, ix, ITEMS_Y + 1)
+        ix += 6
+
+    if "desk_plant" in owned:
+        pc = {"G": "#3a8a2a", "S": "#5a3a10", "P": "#8a6040"}
+        items_svg += _px(PLANT_ART, pc, S, ix, ITEMS_Y - 1)
+        ix += 6
+
+    if "rubber_duck" in owned:
+        dc = {"Y": "#f0c020", "O": "#e08010"}
+        items_svg += _px(DUCK_ART, dc, S, ix, ITEMS_Y + 2)
+        ix += 5
+
+    # Framed cert — small rectangle on wall
+    if "framed_cert" in owned:
+        cert_x, cert_y = 80, 10
+        items_svg += (
+            f'<rect x="{cert_x*S}" y="{cert_y*S}" width="{8*S}" height="{6*S}" fill="{p["desk"]}"/>'
+            f'<rect x="{cert_x*S}" y="{cert_y*S}" width="{8*S}" height="{6*S}" fill="none" '
+            f'stroke="{p["border"]}" stroke-width="1"/>'
+            f'<rect x="{(cert_x+1)*S}" y="{(cert_y+1)*S}" width="{6*S}" height="{S}" fill="{p["screen_glow"]}" opacity="0.3"/>'
         )
 
-    monitors = mon()
-    if "extra_monitor" in owned:
-        monitors += mon(56)
+    # Streak flame — pixel art
+    if streak >= 3:
+        flame_x = 88
+        items_svg += (
+            f'<rect x="{flame_x*S}" y="{(ITEMS_Y+1)*S}" width="{S}" height="{3*S}" fill="#ff6600"/>'
+            f'<rect x="{(flame_x-1)*S}" y="{(ITEMS_Y+2)*S}" width="{3*S}" height="{2*S}" fill="#ff6600"/>'
+            f'<rect x="{flame_x*S}" y="{(ITEMS_Y+2)*S}" width="{S}" height="{2*S}" fill="#ffcc00"/>'
+        )
 
-    # Desk items
-    items = ["⌨️"]
-    if "coffee_cup"  in owned: items.append("☕")
-    if "desk_plant"  in owned: items.append("🪴")
-    if "rubber_duck" in owned: items.append("🦆")
-    if "stress_ball" in owned: items.append("🔴")
-    if "framed_cert" in owned: items.append("📜")
-    if streak >= 3:             items.append("🔥")
-    items_html = "".join(
-        f'<span style="font-size:17px;margin:0 3px">{i}</span>' for i in items
+    # ── Name plate ─────────────────────────────────────────────────────────
+    # Rendered as SVG text (readable, not pixel art)
+    name_svg = (
+        f'<text x="{VW*S//2}" y="{(VH-1)*S}" '
+        f'font-family="Inter,sans-serif" font-size="{int(S*1.8)}" '
+        f'fill="{p["border"]}" text-anchor="middle" font-weight="600">'
+        f'{user["name"]} · {title} · Lv {level}'
+        f'</text>'
     )
 
-    html = (
-        f'<div style="background:{p["bg"]};border:2px solid {p["border"]};'
-        f'padding:14px 16px 10px;max-width:240px;text-align:center;'
-        f'box-shadow:3px 3px 0 {p["shadow"]}">'
+    # ── Assemble SVG ───────────────────────────────────────────────────────
+    svg_w = VW * S
+    svg_h = VH * S
 
-        f'<div style="font-size:11px;color:{p["fg"]};font-weight:600;'
-        f'border-bottom:1px solid {p["border"]};padding-bottom:6px;margin-bottom:8px">'
-        f'{user["name"]} · {title}</div>'
-
-        f'<div style="font-size:42px;line-height:1;margin-bottom:8px">{char}</div>'
-
-        f'<div style="display:flex;justify-content:center;align-items:flex-end;margin-bottom:8px">'
-        f'{monitors}</div>'
-
-        f'<div style="background:{p["surface"]};border-top:2px solid {p["border"]};'
-        f'padding:6px 8px;display:flex;flex-wrap:wrap;justify-content:center">'
-        f'{items_html}</div>'
-
-        f'<div style="font-size:11px;color:{p["fg"]};opacity:0.6;margin-top:6px">'
-        f'Lv {level} · {streak}d streak</div>'
-        f'</div>'
+    svg = (
+        f'<svg viewBox="0 0 {svg_w} {svg_h}" width="100%" '
+        f'xmlns="http://www.w3.org/2000/svg" '
+        f'style="display:block;image-rendering:pixelated;max-height:360px">'
+        f'{bg_rects}'
+        f'{char_svg}'
+        f'{mon_svg}'
+        f'{mon2_svg}'
+        f'{items_svg}'
+        f'{name_svg}'
+        f'</svg>'
     )
 
-    st.markdown(html, unsafe_allow_html=True)
+    st.markdown(svg, unsafe_allow_html=True)
     st.caption("Buy items in the Shop to customize your desk")

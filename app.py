@@ -200,11 +200,9 @@ with tab_me:
     ])
 
     with sub_profile:
-        col_desk, col_stats = st.columns([1, 2])
-        with col_desk:
-            render_desk_scene(user)
-        with col_stats:
-            render_profile(user)
+        render_desk_scene(user)
+        st.markdown("---")
+        render_profile(user)
 
     with sub_shop:
         render_shop(user)

@@ -93,6 +93,31 @@ def init_db():
         achieved_at  TEXT DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(user_id, milestone_key)
     );
+
+    CREATE TABLE IF NOT EXISTS todos (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id    INTEGER NOT NULL,
+        text       TEXT NOT NULL,
+        due_date   TEXT,
+        done       INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS calendar_events (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id    INTEGER NOT NULL,
+        title      TEXT NOT NULL,
+        event_date TEXT NOT NULL,
+        note       TEXT DEFAULT '',
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS streak_log (
+        id      INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        log_date TEXT NOT NULL,
+        UNIQUE(user_id, log_date)
+    );
     """)
     conn.commit()
     conn.close()
@@ -208,6 +233,7 @@ def record_streak(user_id: int):
                 (new_streak, today, user_id))
     conn.commit()
     conn.close()
+    log_streak_day(user_id, today)
 
 
 def increment_daily_done(user_id: int):
@@ -385,3 +411,110 @@ def get_streaks_this_week() -> list:
     rows = [dict(r) for r in cur.fetchall()]
     conn.close()
     return rows
+
+
+# --- To-do list ---
+
+def get_todos(user_id: int, include_done: bool = False) -> list:
+    conn = _get_connection()
+    cur = conn.cursor()
+    if include_done:
+        cur.execute("SELECT * FROM todos WHERE user_id = ? ORDER BY due_date ASC, created_at ASC", (user_id,))
+    else:
+        cur.execute("SELECT * FROM todos WHERE user_id = ? AND done = 0 ORDER BY due_date ASC, created_at ASC", (user_id,))
+    rows = [dict(r) for r in cur.fetchall()]
+    conn.close()
+    return rows
+
+
+def add_todo(user_id: int, text: str, due_date: str = None) -> int:
+    conn = _get_connection()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO todos (user_id, text, due_date) VALUES (?, ?, ?)", (user_id, text, due_date))
+    tid = cur.lastrowid
+    conn.commit()
+    conn.close()
+    return tid
+
+
+def complete_todo(todo_id: int, user_id: int):
+    conn = _get_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE todos SET done = 1 WHERE id = ? AND user_id = ?", (todo_id, user_id))
+    conn.commit()
+    conn.close()
+
+
+def delete_todo(todo_id: int, user_id: int):
+    conn = _get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM todos WHERE id = ? AND user_id = ?", (todo_id, user_id))
+    conn.commit()
+    conn.close()
+
+
+# --- Calendar events ---
+
+def get_calendar_events(user_id: int, year: int, month: int) -> list:
+    conn = _get_connection()
+    cur = conn.cursor()
+    prefix = f"{year}-{month:02d}"
+    cur.execute("SELECT * FROM calendar_events WHERE user_id = ? AND event_date LIKE ? ORDER BY event_date",
+                (user_id, f"{prefix}%"))
+    rows = [dict(r) for r in cur.fetchall()]
+    conn.close()
+    return rows
+
+
+def add_calendar_event(user_id: int, title: str, event_date: str, note: str = "") -> int:
+    conn = _get_connection()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO calendar_events (user_id, title, event_date, note) VALUES (?, ?, ?, ?)",
+                (user_id, title, event_date, note))
+    eid = cur.lastrowid
+    conn.commit()
+    conn.close()
+    return eid
+
+
+def delete_calendar_event(event_id: int, user_id: int):
+    conn = _get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM calendar_events WHERE id = ? AND user_id = ?", (event_id, user_id))
+    conn.commit()
+    conn.close()
+
+
+def get_all_calendar_events(user_id: int) -> list:
+    conn = _get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM calendar_events WHERE user_id = ? ORDER BY event_date", (user_id,))
+    rows = [dict(r) for r in cur.fetchall()]
+    conn.close()
+    return rows
+
+
+# --- Streak log ---
+
+def log_streak_day(user_id: int, log_date: str = None):
+    from datetime import date as dt
+    log_date = log_date or str(dt.today())
+    conn = _get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("INSERT OR IGNORE INTO streak_log (user_id, log_date) VALUES (?, ?)", (user_id, log_date))
+        conn.commit()
+    except Exception:
+        pass
+    conn.close()
+
+
+def get_streak_log(user_id: int, year: int, month: int) -> set:
+    conn = _get_connection()
+    cur = conn.cursor()
+    prefix = f"{year}-{month:02d}"
+    cur.execute("SELECT log_date FROM streak_log WHERE user_id = ? AND log_date LIKE ?",
+                (user_id, f"{prefix}%"))
+    dates = {r["log_date"] for r in cur.fetchall()}
+    conn.close()
+    return dates

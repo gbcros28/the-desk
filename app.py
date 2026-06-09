@@ -14,6 +14,9 @@ from components.jargon_deck import render_jargon_deck
 from components.stock_pitch import render_stock_pitch
 from components.content_upload import render_content_upload
 from components.placement import render_placement, should_show_placement
+from components.desk_scene import render_desk_scene
+from components.calendar_view import render_calendar
+from components.todo import render_todo
 
 st.set_page_config(page_title="The Desk", page_icon="📊", layout="wide")
 
@@ -108,6 +111,8 @@ with st.sidebar:
         "weak":      "🎯 Weak Spots",
         "jargon":    "📖 Jargon Deck",
         "pitch":     "📝 Stock Pitch",
+        "calendar":  "📅 Calendar",
+        "todo":      "✅ To-Do List",
         "profile":   "👤 Profile",
         "shop":      "🛍 Shop",
         "upload":    "➕ Add Content",
@@ -181,8 +186,18 @@ elif page == "jargon":
 elif page == "pitch":
     render_stock_pitch(user_id)
 
+elif page == "calendar":
+    render_calendar(user_id, lessons)
+
+elif page == "todo":
+    render_todo(user_id)
+
 elif page == "profile":
-    render_profile(user)
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        render_desk_scene(user)
+    with col2:
+        render_profile(user)
 
 elif page == "shop":
     render_shop(user)

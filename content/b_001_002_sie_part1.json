@@ -1,0 +1,348 @@
+{
+  "track": "B",
+  "track_name": "Securities & Markets (SIE)",
+  "lessons": [
+    {
+      "id": "B1",
+      "track": "B",
+      "track_name": "Securities & Markets (SIE)",
+      "unit": 1,
+      "title": "Equity Securities",
+      "order": 1,
+      "prerequisites": [],
+      "estimated_minutes": 18,
+      "xp_reward": 100,
+      "why_it_matters": "Equity is the first content area on the FINRA SIE outline, and 'common vs preferred,' rights, and dividend mechanics are the vocabulary every AM interview assumes you already have.",
+      "in_the_seat": "On the job: you'll talk about share classes, dividends, and dilution constantly — this is the baseline fluency nobody re-explains once you're hired.",
+      "concept": [
+        {
+          "type": "text",
+          "heading": "Common stock: ownership, with a vote",
+          "body": "Common stock is an ownership stake in a corporation. Holders get **voting rights** (electing the board, major corporate matters) and a residual claim on profits — residual meaning they're paid last, after creditors and preferred holders. Upside is theoretically unlimited; in a liquidation, common is at the back of the line. Common shareholders may receive dividends, but dividends are never guaranteed — they must be declared by the board."
+        },
+        {
+          "type": "text",
+          "heading": "Preferred stock: equity that acts like a bond",
+          "body": "Preferred stock represents ownership (it's equity), but it behaves like fixed income. It pays a **fixed dividend** (often quoted as a rate on a $100 par value) and generally has **no voting rights**. Because the dividend is fixed, the preferred's market price moves *inversely* with interest rates — when rates rise, the fixed payment is worth less, so the price falls. Preferred sits above common but below debt in both the dividend pecking order and the liquidation line: higher risk than bonds, lower risk than common."
+        },
+        {
+          "type": "formula",
+          "heading": "Preferred stock yields",
+          "body": "Annual Income = Dividend Rate × Par   ·   Current Yield = Annual Income ÷ Market Price"
+        },
+        {
+          "type": "callout",
+          "variant": "key_insight",
+          "heading": "Discount/par/premium and yield",
+          "body": "The stated dividend rate is fixed to par and never changes. The *current yield* moves with the market price. Trading at a discount (below par) → current yield is ABOVE the dividend rate. At par → they're equal. At a premium (above par) → current yield is BELOW the dividend rate. Same logic you'll see again with bonds: price and yield move in opposite directions."
+        },
+        {
+          "type": "text",
+          "heading": "Features of preferred stock",
+          "body": "**Cumulative** — missed dividends accumulate and must be paid before common dividends resume. **Straight (non-cumulative)** — missed dividends are simply gone. **Participating** — can receive extra dividends in strong years beyond the fixed rate. **Callable** — the issuer can buy it back, usually when favorable to them. **Convertible** — can be exchanged for common stock at a set ratio. The more holder-favorable the feature, the higher the price the market will pay (and the lower the yield it accepts)."
+        },
+        {
+          "type": "text",
+          "heading": "Rights vs. warrants",
+          "body": "Both let you buy stock at a set price, but they're opposites in two ways. **Rights** are given to existing shareholders to buy *below* the current market price, are short-lived (typically 90 days or less), and have intrinsic value immediately — they protect against dilution in a new issue. **Warrants** let you buy at a price *above* the current market, are long-lived (often ~5 years, sometimes perpetual), and have no intrinsic value at issue, only time value. Warrants are often attached to bond offerings as a 'sweetener' that lets the issuer pay a lower coupon."
+        },
+        {
+          "type": "callout",
+          "variant": "watch_out",
+          "heading": "ADRs and foreign exposure",
+          "body": "American Depositary Receipts (ADRs) let U.S. investors hold foreign companies: a domestic bank places foreign shares in trust and issues receipts that trade in U.S. markets and are SEC-registered. They carry currency (exchange-rate) risk on top of normal equity risk. A Global Depositary Receipt (GDR) is the same idea but trades in foreign markets."
+        }
+      ],
+      "worked_example": {
+        "title": "Pricing a preferred and reading its yield",
+        "setup": "A preferred stock has a $100 par value and a 6% dividend rate. It currently trades at $80. Find the annual income and the current yield, and say whether it's at a discount or premium.",
+        "steps": [
+          "**Annual income** = dividend rate × par = 6% × $100 = **$6 per year** (this never changes).",
+          "**Current yield** = annual income ÷ market price = 6 ÷ 80 = **7.5%**.",
+          "It trades at **$80, below the $100 par → a discount.**",
+          "Sure enough, at a discount the **current yield (7.5%) is above the dividend rate (6%)** — exactly the discount/premium rule."
+        ],
+        "takeaway": "Income is fixed to par; yield floats with price. Below par, you're getting more yield for your dollar — discount means yield beats the stated rate."
+      },
+      "glossary": [
+        { "term": "Par value (preferred)", "definition": "The face value the fixed dividend rate is based on; assume $100 unless told otherwise." },
+        { "term": "Cumulative preferred", "definition": "Preferred whose missed dividends accrue and must be paid before any common dividend." },
+        { "term": "Right", "definition": "A short-term privilege for existing holders to buy new shares below market price; has intrinsic value." },
+        { "term": "Warrant", "definition": "A long-term option to buy stock above the current price; no intrinsic value at issue, only time value. Often a bond 'sweetener.'" },
+        { "term": "ADR", "definition": "American Depositary Receipt — an SEC-registered receipt letting U.S. investors hold foreign shares; carries currency risk." }
+      ],
+      "questions": [
+        {
+          "id": "B1-q01",
+          "type": "mcq",
+          "difficulty": 1,
+          "xp": 8,
+          "prompt": "Which security typically carries voting rights?",
+          "choices": ["Common stock", "Preferred stock", "A warrant", "A corporate bond"],
+          "answer_index": 0,
+          "explanation": "Common stock carries voting rights and a residual claim. Preferred generally has no vote; warrants and bonds aren't ownership stakes with votes.",
+          "tags": ["common", "voting"]
+        },
+        {
+          "id": "B1-q02",
+          "type": "numeric",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "A preferred stock has a $100 par and a 5% dividend rate. What is its annual income, in dollars?",
+          "answer": 5,
+          "tolerance": 0.1,
+          "unit": "$",
+          "explanation": "Annual income = dividend rate × par = 5% × 100 = $5. This is fixed regardless of market price.",
+          "tags": ["preferred", "income"]
+        },
+        {
+          "id": "B1-q03",
+          "type": "numeric",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "That same preferred ($100 par, 5% rate) trades at $125. What is its current yield, in percent?",
+          "answer": 4,
+          "tolerance": 0.1,
+          "unit": "%",
+          "explanation": "Current yield = annual income ÷ market price = 5 ÷ 125 = 4%. Trading at a premium, so the current yield (4%) is below the dividend rate (5%).",
+          "tags": ["preferred", "current-yield", "premium"]
+        },
+        {
+          "id": "B1-q04",
+          "type": "mcq",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "What is the key difference between a right and a warrant?",
+          "choices": [
+            "Rights let you buy above market and last years; warrants let you buy below market and are short-term",
+            "Rights let you buy below market and are short-term; warrants let you buy above market and are long-term",
+            "They are identical",
+            "Only warrants are given to existing shareholders"
+          ],
+          "answer_index": 1,
+          "explanation": "Rights: below-market, short-term (≤90 days), intrinsic value, anti-dilution for existing holders. Warrants: above-market, long-term, time value only, often a bond sweetener.",
+          "tags": ["rights", "warrants"]
+        },
+        {
+          "id": "B1-q05",
+          "type": "fill_blank",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "A ______ preferred stock requires the issuer to make up any skipped dividends before common shareholders can be paid.",
+          "accepted": ["cumulative"],
+          "explanation": "Cumulative preferred accrues missed dividends; they must be paid before common dividends resume. Straight (non-cumulative) preferred does not.",
+          "tags": ["preferred", "cumulative"]
+        },
+        {
+          "id": "B1-q06",
+          "type": "mcq",
+          "difficulty": 2,
+          "xp": 10,
+          "prompt": "Preferred stock prices generally move which way when interest rates rise?",
+          "choices": ["Up", "Down", "They don't move with rates", "Up then down"],
+          "answer_index": 1,
+          "explanation": "Because the dividend is fixed, preferred behaves like fixed income — when rates rise, the fixed payment is worth less, so the price falls. Inverse relationship.",
+          "tags": ["preferred", "interest-rate-risk"]
+        },
+        {
+          "id": "B1-q07",
+          "type": "free_response",
+          "difficulty": 2,
+          "xp": 15,
+          "prompt": "Explain why preferred stock is described as a hybrid between debt and common equity. Then grade yourself.",
+          "model_answer": "Preferred is legally equity — it represents ownership — but economically it behaves like a bond. Like a bond, it pays a fixed, scheduled payment (a fixed dividend on par) and its price moves inversely with interest rates; like equity, it has no maturity in many cases and its dividends can be suspended (they're declared, not contractually owed like bond interest). In the capital structure it sits between the two: senior to common stock (paid first in dividends and liquidation) but junior to debt (bondholders get paid before any equity). So: equity in form, fixed-income in behavior, middle of the pecking order in risk.",
+          "rubric": [
+            "Notes the fixed dividend / inverse price-rate relationship (bond-like)",
+            "Notes it's ownership and dividends can be suspended (equity-like)",
+            "Places it between debt and common in seniority/risk"
+          ],
+          "explanation": "Understanding where preferred sits in the capital structure is a recurring theme that returns in the valuation and credit tracks.",
+          "tags": ["preferred", "capital-structure", "interview"]
+        }
+      ],
+      "completion_reward": {
+        "title": "Equity Securities: cleared",
+        "copy": "Common, preferred, rights, warrants, ADRs — you've got the equity vocabulary cold. That's the stuff interviewers assume and never explain. One unit down on the SIE."
+      }
+    },
+    {
+      "id": "B2",
+      "track": "B",
+      "track_name": "Securities & Markets (SIE)",
+      "unit": 2,
+      "title": "Debt Securities",
+      "order": 2,
+      "prerequisites": ["B1"],
+      "estimated_minutes": 22,
+      "xp_reward": 120,
+      "why_it_matters": "Bonds are heavily tested on the SIE, and the price/yield inverse relationship is a concept interviewers love to probe — getting it wrong is a fast filter.",
+      "in_the_seat": "On the job: rates and credit move markets daily. Knowing how a bond's price reacts to rates is table-stakes fluency in any investing seat, equity or credit.",
+      "concept": [
+        {
+          "type": "text",
+          "heading": "A bond is a loan you can trade",
+          "body": "When you buy a bond, you're lending the issuer money. They promise to pay periodic **interest** (the coupon, usually semi-annual) and return the **principal** (par, assume $1,000 for bonds) at maturity. A bondholder is a **creditor**, not an owner — which means they get paid before equity holders, but they don't share in the upside if the company thrives. The coupon rate is fixed at issuance and never changes (unless it's explicitly a floating-rate note)."
+        },
+        {
+          "type": "callout",
+          "variant": "key_insight",
+          "heading": "The single most important bond idea: price and yield move inversely",
+          "body": "When interest rates rise, existing bonds with lower fixed coupons become less attractive, so their prices FALL. When rates fall, existing bonds become more valuable, so prices RISE. Price down, yield up; price up, yield down. Everything else about bonds is a footnote next to this. Internalize it."
+        },
+        {
+          "type": "text",
+          "heading": "The yield ladder",
+          "body": "**Nominal yield (coupon)** = annual income ÷ par — fixed, never changes. **Current yield** = annual income ÷ market price — moves with price. **Yield to maturity (YTM, also called 'basis')** = the total return if held to maturity, accounting for the coupon AND any gain/loss from buying at a discount or premium. At a discount, YTM > current yield > coupon. At a premium, the order flips: coupon > current yield > YTM. At par, all three are equal."
+        },
+        {
+          "type": "formula",
+          "heading": "The core bond yields",
+          "body": "Coupon (Nominal) = Annual Income ÷ Par   ·   Current Yield = Annual Income ÷ Market Price   ·   Real Return = Yield − Inflation Rate"
+        },
+        {
+          "type": "text",
+          "heading": "Reading bond prices",
+          "body": "Bond prices are quoted as a percentage of par. A bond 'trading at 95' means 95% of $1,000 = $950. 'Trading at 102' = $1,020. Corporate bonds are often quoted in eighths (e.g., 99½ = $995). A 'yield quote' or 'basis quote' (e.g., 'a 10% bond on a 4% basis') is quoting the YTM, not the price. One bond point = $10."
+        },
+        {
+          "type": "callout",
+          "variant": "interview_trap",
+          "heading": "Which bonds move the most?",
+          "body": "Price volatility is greatest for bonds with **long maturities and low coupons** — the further out and the less you're paid along the way, the more sensitive the price is to rate changes. The most *stable* bonds have short maturities and high coupons. Zero-coupon bonds (no coupon, long maturity) are the most volatile of all. Of the two factors, maturity matters most."
+        },
+        {
+          "type": "text",
+          "heading": "Key features",
+          "body": "**Secured** bonds are backed by specific assets; **unsecured** bonds (debentures) are backed only by the issuer's general credit. **Callable** — the issuer can redeem early, typically when rates fall (bad for the holder, so callable bonds offer higher yields and may have call protection). **Putable** — the holder can sell it back to the issuer at par, typically when rates rise (good for the holder, so these trade at higher prices / lower yields). Rule of thumb: any feature that benefits the holder raises the price and lowers the yield."
+        },
+        {
+          "type": "text",
+          "heading": "Ratings and the investment-grade line",
+          "body": "The three big rating agencies are Standard & Poor's, Moody's, and Fitch. The critical threshold: anything rated **below BBB- (S&P/Fitch) is 'speculative,' a.k.a. high-yield or 'junk.'** Lower ratings mean higher default risk, so issuers must offer higher yields to compensate. Longer maturities also generally carry more risk (more time for things to go wrong), hence higher yields."
+        }
+      ],
+      "worked_example": {
+        "title": "Discount bond: lining up the three yields",
+        "setup": "A corporate bond has a $1,000 par and a 5% coupon, and currently trades at $900 (a discount). Find the coupon, the current yield, and explain where YTM sits relative to them.",
+        "steps": [
+          "**Coupon (nominal yield)** = annual income ÷ par = $50 ÷ $1,000 = **5%** (fixed).",
+          "Annual income = 5% × $1,000 = **$50**.",
+          "**Current yield** = $50 ÷ $900 = **5.56%**.",
+          "Because it's bought at a **discount**, you'll also earn a gain when it matures at par ($1,000 > $900), so **YTM is even higher** than the current yield.",
+          "Order at a discount: **YTM > current yield (5.56%) > coupon (5%).**"
+        ],
+        "takeaway": "Buy below par and every yield measure climbs as you account for the pull to par at maturity. At a premium, the whole ranking flips."
+      },
+      "glossary": [
+        { "term": "Coupon / nominal yield", "definition": "The bond's fixed annual interest as a percent of par; set at issuance and unchanging." },
+        { "term": "Yield to maturity (YTM)", "definition": "Total return if held to maturity, including coupons and any discount/premium gain or loss. Also called 'basis.'" },
+        { "term": "Debenture", "definition": "An unsecured bond backed only by the issuer's general credit, not specific collateral." },
+        { "term": "Callable bond", "definition": "Issuer can redeem early (usually when rates fall); compensates holders with higher yield and often call protection." },
+        { "term": "Investment grade", "definition": "Bonds rated BBB-/Baa3 or higher; below that is speculative / high-yield / 'junk.'" }
+      ],
+      "questions": [
+        {
+          "id": "B2-q01",
+          "type": "mcq",
+          "difficulty": 1,
+          "xp": 8,
+          "prompt": "Interest rates rise. What happens to the price of an existing fixed-coupon bond?",
+          "choices": ["It rises", "It falls", "It stays flat", "It depends on the coupon only"],
+          "answer_index": 1,
+          "explanation": "Price and yield move inversely. Higher rates make existing lower-coupon bonds less attractive, so their prices fall.",
+          "tags": ["price-yield", "interest-rate-risk"]
+        },
+        {
+          "id": "B2-q02",
+          "type": "numeric",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "A bond is quoted at 97. What is its dollar price, assuming $1,000 par?",
+          "answer": 970,
+          "tolerance": 1,
+          "unit": "$",
+          "explanation": "Bond quotes are a percentage of par: 97% × $1,000 = $970.",
+          "tags": ["quotes", "pricing"]
+        },
+        {
+          "id": "B2-q03",
+          "type": "numeric",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "A bond has a $1,000 par and a 6% coupon, trading at $1,200. What is the current yield, in percent?",
+          "answer": 5,
+          "tolerance": 0.1,
+          "unit": "%",
+          "explanation": "Annual income = 6% × 1,000 = $60. Current yield = 60 ÷ 1,200 = 5%. At a premium, current yield (5%) is below the coupon (6%).",
+          "tags": ["current-yield", "premium"]
+        },
+        {
+          "id": "B2-q04",
+          "type": "ordering",
+          "difficulty": 3,
+          "xp": 15,
+          "prompt": "For a bond trading at a DISCOUNT, order the three yields from lowest to highest.",
+          "items": ["Coupon (nominal yield)", "Current yield", "Yield to maturity"],
+          "explanation": "At a discount: coupon < current yield < YTM. Buying below par adds a gain at maturity, pushing YTM highest. (At a premium, the order reverses.)",
+          "tags": ["yields", "discount"]
+        },
+        {
+          "id": "B2-q05",
+          "type": "mcq",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "Which bond has the GREATEST price volatility for a given change in rates?",
+          "choices": ["Short maturity, high coupon", "Short maturity, low coupon", "Long maturity, high coupon", "Long maturity, low coupon"],
+          "answer_index": 3,
+          "explanation": "Long maturity + low coupon = most price-sensitive to rate changes. Zero-coupon long bonds are the extreme case. Short maturity + high coupon is the most stable.",
+          "tags": ["volatility", "duration"]
+        },
+        {
+          "id": "B2-q06",
+          "type": "fill_blank",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "Bonds rated below BBB- are considered speculative, also known as high-yield or ______ bonds.",
+          "accepted": ["junk", "junk bonds"],
+          "explanation": "Below investment grade (below BBB-/Baa3) is speculative — 'junk' — carrying higher default risk and therefore higher yields.",
+          "tags": ["ratings", "junk"]
+        },
+        {
+          "id": "B2-q07",
+          "type": "mcq",
+          "difficulty": 2,
+          "xp": 10,
+          "prompt": "A callable bond benefits which party, and when is it typically called?",
+          "choices": [
+            "The holder; called when rates rise",
+            "The issuer; called when rates fall",
+            "The holder; called when rates fall",
+            "The issuer; called when rates rise"
+          ],
+          "answer_index": 1,
+          "explanation": "A call benefits the issuer, who redeems early when rates fall so they can refinance cheaper. Because it's bad for holders, callable bonds offer higher yields and often call protection.",
+          "tags": ["callable", "features"]
+        },
+        {
+          "id": "B2-q08",
+          "type": "free_response",
+          "difficulty": 3,
+          "xp": 20,
+          "prompt": "\"Why do longer-maturity, lower-coupon bonds move more in price when rates change?\" Explain, then grade yourself.",
+          "model_answer": "A bond's price is the present value of its future cash flows. Two things make that price more sensitive to rate changes. First, **maturity**: the longer until you get your principal back, the more years of discounting are affected by a rate change, so a given rate move compounds across more periods and swings the price more. Second, **low coupon**: a low-coupon bond returns less of its value early (small interim payments) and more at the very end, so its cash flows are weighted further into the future — again, more exposure to discounting. A zero-coupon bond is the extreme: one payment at maturity, maximum sensitivity. Conceptually this is what 'duration' measures — the weighted-average timing of cash flows, and the bond's price sensitivity to rates.",
+          "rubric": [
+            "Frames price as present value of future cash flows discounted at the rate",
+            "Explains longer maturity = more periods affected by the rate change",
+            "Explains low coupon = cash flows weighted later, so more sensitive (bonus: names duration)"
+          ],
+          "explanation": "This connects the SIE 'volatility' fact to the present-value thinking you'll use in the valuation track — same machinery, different application.",
+          "tags": ["volatility", "duration", "interview"]
+        }
+      ],
+      "completion_reward": {
+        "title": "Debt Securities: cleared",
+        "copy": "Price up, yield down — you've got the one bond fact that trips up half of candidates. Coupons, YTM, callable vs putable, the junk line: all yours. The Fed can raise rates; your confidence stays flat."
+      }
+    }
+  ]
+}

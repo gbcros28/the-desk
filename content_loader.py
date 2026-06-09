@@ -64,9 +64,11 @@ def validate_lesson(data: dict, label: str) -> dict:
         if sec["type"] in ("text", "callout") and "body" not in sec:
             raise ContentError(f"[{slabel}] Section type '{sec['type']}' requires 'body'")
         if sec["type"] == "formula":
-            for ff in ("label", "expression"):
-                if ff not in sec:
-                    raise ContentError(f"[{slabel}] Formula section requires '{ff}'")
+            # "heading" and "label" are interchangeable; "body" and "expression" likewise
+            if "label" not in sec and "heading" not in sec:
+                raise ContentError(f"[{slabel}] Formula section requires 'label' or 'heading'")
+            if "expression" not in sec and "body" not in sec:
+                raise ContentError(f"[{slabel}] Formula section requires 'expression' or 'body'")
 
     we = _require(data, "worked_example", label, dict)
     # Accept both schema shapes: {title,body} and {title,setup,steps,takeaway}

@@ -87,6 +87,12 @@ if not user:
 
 storage.record_streak(user_id)
 user  = storage.get_user(user_id)
+
+# ── Admin shortcut — "billybob" gets everything unlocked ──────────────────
+if storage.is_admin_name(user["name"]):
+    storage.apply_admin_perks(user_id, lessons=st.session_state.get("lessons", {}))
+    user = storage.get_user(user_id)   # reload after perks applied
+
 theme = gamification.get_active_theme(user)
 apply_theme(theme)
 

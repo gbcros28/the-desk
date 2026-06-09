@@ -518,3 +518,74 @@ def get_streak_log(user_id: int, year: int, month: int) -> set:
     dates = {r["log_date"] for r in cur.fetchall()}
     conn.close()
     return dates
+
+
+# ── Admin / dev shortcut ──────────────────────────────────────────────────
+
+ADMIN_FLAG_KEY = "admin_perks_applied"
+
+def is_admin_name(name: str) -> bool:
+    return name.strip().lower() == "billybob"
+
+
+def apply_admin_perks(user_id: int, lessons: dict = None):
+    """
+    Grant the billybob account everything:
+    - 999,999 XP + bps, max level/title
+    - All cosmetics unlocked (no cost deducted)
+    - All lessons marked complete at 100% mastery
+    - 365-day streak
+    Only runs once per user_id (tracked via a milestone flag).
+    """
+    if check_milestone(user_id, ADMIN_FLAG_KEY):
+        return   # already applied
+
+    import json as _json
+
+    # Pull all shop item IDs and grant them for free
+    from gamification import SHOP_ITEMS, TITLES, LEVELS
+    all_cosmetics = [
+        item["id"] for item in SHOP_ITEMS if item["category"] != "consumable"
+    ]
+    # Also give a pile of streak freezes
+    streak_freezes = 99
+
+    # Best title + level
+    max_xp    = 9_999_999
+    max_level = LEVELS[-1][1]
+    max_title = TITLES[-1][1]
+
+    equipped = _json.dumps({
+        "theme":    "gold_theme",
+        "cosmetic": "vest",
+    })
+
+    update_user(
+        user_id,
+        xp              = max_xp,
+        bps             = 9_999_999,
+        level           = max_level,
+        title           = max_title,
+        streak          = 365,
+        streak_freeze   = streak_freezes,
+        owned_cosmetics = _json.dumps(all_cosmetics),
+        equipped        = equipped,
+    )
+
+    # Mark all loaded lessons complete at 100%
+    if lessons:
+        from datetime import date as _date
+        today = str(_date.today())
+        conn = _get_connection()
+        cur  = conn.cursor()
+        for lid in lessons:
+            cur.execute("""
+                INSERT INTO lesson_progress (user_id, lesson_id, completed, completed_at, mastery)
+                VALUES (?, ?, 1, ?, 100.0)
+                ON CONFLICT(user_id, lesson_id) DO UPDATE SET
+                    completed=1, completed_at=?, mastery=100.0
+            """, (user_id, lid, today, today))
+        conn.commit()
+        conn.close()
+
+    record_milestone(user_id, ADMIN_FLAG_KEY)

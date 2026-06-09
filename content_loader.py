@@ -115,7 +115,9 @@ def validate_lesson(data: dict, label: str) -> dict:
 
     cr = _require(data, "completion_reward", label, dict)
     _require(cr, "title", f"{label} completion_reward", str)
-    _require(cr, "body",  f"{label} completion_reward", str)
+    # Schema uses "copy" or "body" interchangeably
+    if "body" not in cr and "copy" not in cr:
+        raise ContentError(f"[{label} completion_reward] Missing required field: 'body' or 'copy'")
 
     return data
 

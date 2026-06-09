@@ -38,8 +38,17 @@ def _require(obj: dict, field: str, label: str, typ=None):
 
 def validate_lesson(data: dict, label: str) -> dict:
     """Validate a single lesson object. Raises ContentError on any violation."""
-    for f in ("id", "title", "track", "track_name", "unit", "unit_name", "why_it_matters"):
+    # Coerce unit/order to str — schema allows integers here
+    for coerce_field in ("unit", "unit_name", "order"):
+        if coerce_field in data and not isinstance(data[coerce_field], str):
+            data[coerce_field] = str(data[coerce_field])
+
+    for f in ("id", "title", "track", "track_name", "unit", "why_it_matters"):
         _require(data, f, label, str)
+
+    # unit_name is optional (some files omit it — default to unit value)
+    if "unit_name" not in data:
+        data["unit_name"] = data.get("unit", "")
 
     _require(data, "prerequisites", label, list)
 
@@ -151,6 +160,10 @@ def _extract_lessons_from_file(path: Path) -> list:
             for inherit_field in ("track", "track_name", "unit", "unit_name"):
                 if inherit_field not in lesson and inherit_field in data:
                     lesson[inherit_field] = data[inherit_field]
+            # Coerce container-level unit to str before inheritance check
+            for coerce_field in ("unit", "order"):
+                if coerce_field in data and not isinstance(data[coerce_field], str):
+                    data[coerce_field] = str(data[coerce_field])
             label = f"{path.name} lessons[{i}]"
             results.append(validate_lesson(lesson, label))
         return results

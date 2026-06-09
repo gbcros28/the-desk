@@ -1,0 +1,314 @@
+{
+  "track": "A",
+  "track_name": "Accounting Foundations",
+  "lessons": [
+    {
+      "id": "A4",
+      "track": "A",
+      "track_name": "Accounting Foundations",
+      "unit": 4,
+      "title": "Statement Linkages",
+      "order": 4,
+      "prerequisites": ["A1", "A2", "A3"],
+      "estimated_minutes": 22,
+      "xp_reward": 130,
+      "why_it_matters": "\"Depreciation goes up $10 — walk me through the three statements\" is about as close to a guaranteed technical interview question as finance has. This lesson is that question, and the thinking behind it.",
+      "in_the_seat": "On the job: every model you ever open is three linked statements. Understanding the wiring is what lets you change one assumption and actually trust the output.",
+      "concept": [
+        {
+          "type": "text",
+          "heading": "Three statements, one machine",
+          "body": "The income statement, balance sheet, and cash flow statement are not three separate reports — they're three views of one connected system. Change something in one, and the change ripples through all three. The whole skill here is tracing that ripple without losing the thread. Master this and you understand accounting; miss it and you've just memorized three forms."
+        },
+        {
+          "type": "text",
+          "heading": "The wires that connect them",
+          "body": "A handful of connection points do all the work:\n\n- **Net income** (bottom of the income statement) flows into **retained earnings** on the balance sheet, and sits at the **top of the cash flow statement**.\n- **Depreciation** is expensed on the income statement, **added back** on the cash flow statement (non-cash), and reduces **PP&E** on the balance sheet.\n- **Capex** appears in investing cash flow and **increases PP&E** — it is *not* an income statement expense.\n- **Working capital** changes hit operating cash flow and move the current asset/liability lines on the balance sheet.\n- **Debt and equity** raised or returned flow through financing cash flow and change the corresponding balance sheet lines.\n\nEvery linkage question is just one of these wires being pulled."
+        },
+        {
+          "type": "callout",
+          "variant": "key_insight",
+          "heading": "Always walk it in the same order: IS → CFS → BS",
+          "body": "Income statement first, because net income is the input to everything else. Cash flow statement second, because it starts from net income and tells you how cash actually moved. Balance sheet last, because it absorbs the results — the new cash balance from the CFS, plus whatever assets/liabilities changed. Walk it in this order every single time and you won't get lost."
+        },
+        {
+          "type": "text",
+          "heading": "The canonical question: depreciation +$10",
+          "body": "Here's the one you will be asked. \"Depreciation increases by $10. Walk me through the three statements.\" Assume a 25% tax rate. Do it slowly:\n\n**Income statement:** depreciation is an expense, so operating income (EBIT) falls $10, and pre-tax income falls $10. But you save taxes on that $10 — at 25%, taxes drop $2.50 — so **net income falls only $7.50**.\n\n**Cash flow statement:** start at net income, down $7.50. Then add back the full $10 of depreciation, because it's non-cash. Net effect: **cash from operations rises $2.50**. (−7.50 + 10 = +2.50.)\n\n**Balance sheet:** cash is up $2.50 (from the CFS). PP&E is down $10 (the depreciation reduced it). So total assets change by 2.50 − 10 = **−$7.50**. On the other side, retained earnings fall $7.50 (because net income fell $7.50). Both sides down $7.50 — **it balances.**"
+        },
+        {
+          "type": "callout",
+          "variant": "interview_trap",
+          "heading": "The mistake everyone makes: forgetting the tax",
+          "body": "The intuitive (wrong) answer is \"net income falls $10.\" It doesn't — depreciation is tax-deductible, so the company saves taxes, and net income only falls by $10 × (1 − tax rate). The flip side is the famous result: **cash actually goes UP**, by exactly the depreciation × tax rate ($2.50 here). That's the *depreciation tax shield* — a non-cash expense saved you real cash in taxes. Getting this right is the entire point of the question."
+        },
+        {
+          "type": "callout",
+          "variant": "watch_out",
+          "heading": "Depreciation doesn't 'delete' the asset",
+          "body": "PP&E falling by $10 happens through accumulated depreciation, a running tally that nets against the asset's original cost. The machine is still sitting on the floor; the balance sheet just carries it at a lower book value. Don't picture the asset vanishing — picture its recorded value stepping down."
+        }
+      ],
+      "worked_example": {
+        "title": "A second pull on the wires: $50 of capex",
+        "setup": "Forget depreciation for a moment. A company spends $50 of cash on new equipment (capex). Walk the three statements at the moment of purchase.",
+        "steps": [
+          "**Income statement:** no immediate impact. Capex is *capitalized*, not expensed — the cost will hit the IS slowly later, as depreciation. Net income unchanged today.",
+          "**Cash flow statement:** −$50 in investing activities (CFI). Operating cash flow is untouched; total cash falls $50.",
+          "**Balance sheet:** cash down $50, PP&E up $50. Assets net change = 0, so the sheet still balances with no change to equity.",
+          "**The lesson:** spending $50 didn't cost a dollar of reported profit — it just converted one asset (cash) into another (equipment). That's why capex hides from the income statement and why cash flow tells a truer story."
+        ],
+        "takeaway": "Two different events, same method: trace each wire IS → CFS → BS, and confirm the balance sheet still balances. If it balances, you did it right."
+      },
+      "glossary": [
+        { "term": "Depreciation tax shield", "definition": "The cash saved on taxes because depreciation is a deductible expense; equals depreciation × tax rate." },
+        { "term": "Accumulated depreciation", "definition": "The running total of depreciation charged against an asset; reduces PP&E's book value on the balance sheet." },
+        { "term": "Capitalize", "definition": "To record a cost as an asset (e.g. capex) rather than an immediate expense, so it hits earnings gradually via depreciation." },
+        { "term": "Retained earnings link", "definition": "The wire by which net income flows from the income statement into balance-sheet equity each period." }
+      ],
+      "questions": [
+        {
+          "id": "A4-q01",
+          "type": "numeric",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "Depreciation increases by $10 and the tax rate is 25%. By how much does net income DECREASE, in dollars?",
+          "answer": 7.5,
+          "tolerance": 0.1,
+          "unit": "$",
+          "explanation": "Pre-tax income falls $10, but taxes fall $2.50 (25% of 10), so net income falls 10 − 2.50 = $7.50.",
+          "tags": ["linkage", "tax-shield"]
+        },
+        {
+          "id": "A4-q02",
+          "type": "numeric",
+          "difficulty": 3,
+          "xp": 15,
+          "prompt": "Same scenario (depreciation +$10, 25% tax). By how much does cash INCREASE, in dollars?",
+          "answer": 2.5,
+          "tolerance": 0.1,
+          "unit": "$",
+          "explanation": "On the CFS: net income down $7.50, add back $10 of non-cash depreciation → cash up $2.50. That's the depreciation × tax rate tax shield.",
+          "tags": ["linkage", "cash", "tax-shield"]
+        },
+        {
+          "id": "A4-q03",
+          "type": "fill_blank",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "When depreciation rises, cash actually increases — by the depreciation amount times the ______, thanks to the tax saving.",
+          "accepted": ["tax rate", "tax-rate", "taxrate"],
+          "explanation": "The depreciation tax shield = depreciation × tax rate. The expense is non-cash, but the tax saving it creates is real cash.",
+          "tags": ["tax-shield"]
+        },
+        {
+          "id": "A4-q04",
+          "type": "ordering",
+          "difficulty": 1,
+          "xp": 10,
+          "prompt": "Put the three statements in the order you should walk them for any linkage question.",
+          "items": ["Income statement (net income falls)", "Cash flow statement (start at net income, add back non-cash)", "Balance sheet (update cash and PP&E; confirm it balances)"],
+          "explanation": "IS → CFS → BS, always. Net income feeds the CFS; the CFS's ending cash plus other changes complete the BS.",
+          "tags": ["linkage", "method"]
+        },
+        {
+          "id": "A4-q05",
+          "type": "mcq",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "A company spends $50 on capex. How does this hit the statements at the moment of purchase?",
+          "choices": [
+            "Net income falls $50 immediately",
+            "Cash falls $50 (investing) and PP&E rises $50; no immediate income statement impact",
+            "Retained earnings rise $50",
+            "It only appears as an income statement expense"
+          ],
+          "answer_index": 1,
+          "explanation": "Capex is capitalized: cash → equipment. No income statement hit now; the cost flows through later as depreciation. Cash down $50, PP&E up $50, balance sheet still balances.",
+          "tags": ["capex", "linkage"]
+        },
+        {
+          "id": "A4-q06",
+          "type": "mcq",
+          "difficulty": 2,
+          "xp": 10,
+          "prompt": "In the depreciation walkthrough, total assets fell by $7.50. What falls by $7.50 on the other side to keep the balance sheet balanced?",
+          "choices": ["Retained earnings", "Accounts payable", "Long-term debt", "Common stock"],
+          "answer_index": 0,
+          "explanation": "Net income fell $7.50, and net income flows into retained earnings. Equity drops $7.50, matching the $7.50 fall in assets.",
+          "tags": ["linkage", "retained-earnings"]
+        },
+        {
+          "id": "A4-q07",
+          "type": "free_response",
+          "difficulty": 3,
+          "xp": 25,
+          "prompt": "\"Depreciation increases by $10. Walk me through all three statements. Assume a 25% tax rate.\" Say it out loud start to finish, then grade yourself.",
+          "model_answer": "**Income statement:** Depreciation is an operating expense, so EBIT and pre-tax income each fall by $10. At a 25% tax rate, taxes fall $2.50, so net income falls $7.50. **Cash flow statement:** Start at the top with net income, down $7.50. Add back the full $10 of depreciation because it's a non-cash charge. Net change in cash from operations is +$2.50. No investing or financing impact. **Balance sheet:** Cash is up $2.50 from the cash flow statement. PP&E is down $10 because of the depreciation (via accumulated depreciation). So total assets fall by $7.50. On the other side, retained earnings fall $7.50 because net income fell $7.50. Assets down $7.50, equity down $7.50 — the balance sheet balances. The punchline: a non-cash expense actually *increased* cash by $2.50, the tax shield.",
+          "rubric": [
+            "IS: net income falls $7.50 (correctly applies the 25% tax, not a $10 drop)",
+            "CFS: starts at net income, adds back the full $10, lands on +$2.50 cash",
+            "BS: cash +2.50, PP&E −10, retained earnings −7.50, and explicitly states it balances",
+            "Bonus: names the tax shield / that cash went up"
+          ],
+          "explanation": "Walking it cleanly in IS → CFS → BS order, applying the tax correctly, and confirming the balance is exactly what separates a prepared candidate here.",
+          "tags": ["linkage", "interview", "tax-shield"]
+        }
+      ],
+      "completion_reward": {
+        "title": "Statement Linkages: cleared",
+        "copy": "You can now walk the three statements without flinching — the single most-tested technical skill there is. Most candidates fumble the tax. You won't. Go expense yourself a celebratory sandwich (figuratively)."
+      }
+    },
+    {
+      "id": "A5",
+      "track": "A",
+      "track_name": "Accounting Foundations",
+      "unit": 5,
+      "title": "Accounting Quality",
+      "order": 5,
+      "prerequisites": ["A1", "A2", "A3"],
+      "estimated_minutes": 18,
+      "xp_reward": 110,
+      "why_it_matters": "Buy-side investing is fundamentally about not getting fooled. \"What would make you skeptical of a company's earnings?\" is a common analytical prompt — and the everyday job.",
+      "in_the_seat": "On the job: a big chunk of an analyst's work is deciding whether the reported numbers reflect reality before anyone puts capital behind them.",
+      "concept": [
+        {
+          "type": "text",
+          "heading": "Reported earnings are an opinion; cash is closer to a fact",
+          "body": "Net income is built on accrual accounting, which means it's full of judgment calls: when to recognize revenue, how fast to depreciate, what to reserve for. Most of those judgments are honest. Some aren't. 'Accounting quality' is the practice of asking how closely reported earnings track economic reality — and it's the analytical muscle the buy side actually pays for."
+        },
+        {
+          "type": "text",
+          "heading": "Normalize before you judge",
+          "body": "Reported earnings often contain **one-time / non-recurring items** — restructuring charges, asset write-downs, gains or losses on selling a division, big legal settlements. To understand the underlying earning power, you strip these out and look at *normalized* earnings. A company that 'beat' only because it sold a building didn't really beat. The flip side: watch for 'one-time' charges that suspiciously recur every single year — at that point they're just expenses in a costume."
+        },
+        {
+          "type": "callout",
+          "variant": "key_insight",
+          "heading": "The single best red-flag check: net income vs. operating cash flow",
+          "body": "If net income keeps rising but cash from operations is flat or falling, be suspicious. Real, durable earnings convert to cash over time. A widening gap between reported profit and operating cash often means earnings are being propped up by accruals — aggressive revenue recognition, ballooning receivables, or capitalized costs that should've been expensed. Cash is harder (not impossible) to fake than earnings."
+        },
+        {
+          "type": "text",
+          "heading": "Common ways earnings get massaged",
+          "body": "**Aggressive revenue recognition** — booking sales too early (bill-and-hold, channel stuffing) to pull future revenue forward. **Capitalizing costs that should be expensed** — parking operating costs on the balance sheet as assets, which inflates current profit and assets at once. **Cookie-jar reserves** — over-reserving in good years, then releasing the reserve to flatter a weak year. **GAAP vs. non-GAAP** — management's 'adjusted' numbers can quietly exclude very real, recurring costs (stock-based comp is the classic)."
+        },
+        {
+          "type": "callout",
+          "variant": "watch_out",
+          "heading": "Receivables and inventory growing faster than sales",
+          "body": "If revenue grew 10% but receivables grew 40%, the company may be booking sales it hasn't collected (or won't). If inventory is piling up faster than sales, demand may be softening or the company is over-producing. Both show up as working-capital cash drains and are early warnings that the income statement is rosier than the business."
+        }
+      ],
+      "worked_example": {
+        "title": "The numbers look great — should you trust them?",
+        "setup": "A company reports net income up 30% year over year, to $130. But cash from operations fell from $120 to $90. Accounts receivable jumped from $80 to $150 while revenue rose only 12%. What's the read?",
+        "steps": [
+          "**Net income up, CFO down** — the first red flag. Growing profit should generally pull cash along with it; here they're moving in opposite directions.",
+          "**Receivables up ~88% on 12% revenue growth** — sales are being booked far faster than they're being collected. Either customers are slow-paying, or revenue is being recognized aggressively.",
+          "**Tie it together:** the earnings growth is being driven by accruals (sales on paper), not cash. The receivables build is exactly where the missing cash went.",
+          "**Conclusion:** treat the 30% earnings growth with heavy skepticism. The cash flow statement and the receivables line are telling a less flattering story than the headline EPS."
+        ],
+        "takeaway": "When the income statement and the cash flow statement disagree, believe the cash flow statement — and go find where the gap is hiding on the balance sheet."
+      },
+      "glossary": [
+        { "term": "Normalized earnings", "definition": "Earnings adjusted to remove one-time, non-recurring items, to reveal underlying earning power." },
+        { "term": "Channel stuffing", "definition": "Shipping excess product to distributors to book revenue now, borrowing from future sales." },
+        { "term": "Cookie-jar reserves", "definition": "Over-reserving in strong periods, then releasing reserves to smooth or boost weaker periods." },
+        { "term": "DSO (Days Sales Outstanding)", "definition": "Average days to collect receivables; = (Accounts Receivable / Revenue) × 365. Rising DSO can flag collection or revenue-recognition issues." },
+        { "term": "Non-GAAP / adjusted earnings", "definition": "Management-defined earnings that exclude certain items; useful but chosen by the company, so scrutinize what's excluded." }
+      ],
+      "questions": [
+        {
+          "id": "A5-q01",
+          "type": "mcq",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "Which pattern is the strongest single red flag for earnings quality?",
+          "choices": [
+            "Net income and operating cash flow both rising together",
+            "Net income rising while operating cash flow falls",
+            "Revenue and receivables growing at the same rate",
+            "A company paying down debt"
+          ],
+          "answer_index": 1,
+          "explanation": "Profit rising while operating cash flow falls suggests earnings are propped up by accruals rather than real cash. It's the classic quality warning.",
+          "tags": ["red-flags", "cash-vs-earnings"]
+        },
+        {
+          "id": "A5-q02",
+          "type": "fill_blank",
+          "difficulty": 2,
+          "xp": 12,
+          "prompt": "To find underlying earning power, you ______ earnings by removing one-time, non-recurring items.",
+          "accepted": ["normalize", "normalise"],
+          "explanation": "Normalizing strips out restructuring charges, write-downs, asset-sale gains, and the like, leaving recurring earning power.",
+          "tags": ["normalization"]
+        },
+        {
+          "id": "A5-q03",
+          "type": "numeric",
+          "difficulty": 3,
+          "xp": 15,
+          "prompt": "Accounts receivable is $150 and annual revenue is $1,250. What is Days Sales Outstanding (DSO), in days? (DSO = AR / Revenue × 365.)",
+          "answer": 43.8,
+          "tolerance": 1.5,
+          "unit": "days",
+          "explanation": "DSO = 150 / 1,250 × 365 = 43.8 days. Track DSO over time — a rising trend can signal collection or revenue-recognition problems.",
+          "tags": ["dso", "receivables"]
+        },
+        {
+          "id": "A5-q04",
+          "type": "matching",
+          "difficulty": 3,
+          "xp": 15,
+          "prompt": "Match each earnings-management tactic to its description.",
+          "pairs": [
+            { "left": "Channel stuffing", "right": "Shipping excess product to book revenue early" },
+            { "left": "Capitalizing operating costs", "right": "Recording expenses as assets to inflate current profit" },
+            { "left": "Cookie-jar reserves", "right": "Over-reserving in good years to release in bad ones" },
+            { "left": "Non-GAAP adjustments", "right": "Excluding chosen costs from a company-defined earnings figure" }
+          ],
+          "explanation": "Each tactic flatters reported earnings in a different way. Recognizing them by name is how you read an earnings release critically.",
+          "tags": ["tactics", "red-flags"]
+        },
+        {
+          "id": "A5-q05",
+          "type": "mcq",
+          "difficulty": 2,
+          "xp": 10,
+          "prompt": "Why does capitalizing a cost that should be expensed inflate earnings?",
+          "choices": [
+            "It increases revenue directly",
+            "It moves the cost off the income statement onto the balance sheet, so current profit looks higher",
+            "It lowers the tax rate",
+            "It reduces shares outstanding"
+          ],
+          "answer_index": 1,
+          "explanation": "Expensing hits net income now; capitalizing parks the cost as an asset and only bleeds it into earnings slowly via depreciation/amortization — so current profit (and assets) look better than they are.",
+          "tags": ["capitalizing", "red-flags"]
+        },
+        {
+          "id": "A5-q06",
+          "type": "free_response",
+          "difficulty": 3,
+          "xp": 22,
+          "prompt": "\"What would make you skeptical of a company's reported earnings?\" Give a structured answer, then grade yourself.",
+          "model_answer": "I'd start by comparing net income to operating cash flow over several years — if earnings keep rising but operating cash flow lags or falls, the profit may be accrual-driven rather than real. Then I'd look at working capital: receivables or inventory growing much faster than revenue suggests aggressive revenue recognition or weakening demand. I'd check for recurring 'one-time' charges (a one-time item that shows up every year isn't one-time) and normalize earnings to strip out genuine non-recurring gains/losses. I'd compare GAAP to non-GAAP and see what management is excluding — if they're adjusting out real, recurring costs like stock-based comp, I'd discount the adjusted figure. Finally, big swings in reserves or unusual revenue timing near quarter-end would raise an eyebrow.",
+          "rubric": [
+            "Leads with the net income vs. operating cash flow comparison",
+            "Flags receivables/inventory growing faster than revenue",
+            "Mentions normalizing for recurring 'one-time' items and/or scrutinizing non-GAAP adjustments"
+          ],
+          "explanation": "A structured, cash-grounded answer here signals you think like an analyst whose job is to avoid getting fooled — exactly the buy-side mindset.",
+          "tags": ["red-flags", "interview", "earnings-quality"]
+        }
+      ],
+      "completion_reward": {
+        "title": "Accounting Quality: cleared — Track A complete",
+        "copy": "That's all of Accounting. You can build the three statements, link them, and smell when the numbers are too good to be true. You now understand accrual better than the guy who 'basically does finance' at every party. Whole track down — go get the froyo. Medium."
+      }
+    }
+  ]
+}

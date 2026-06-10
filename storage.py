@@ -46,7 +46,25 @@ def init_db():
         owned_cosmetics TEXT DEFAULT '[]',
         equipped        TEXT DEFAULT '{}',
         title           TEXT DEFAULT 'Intern',
-        created_at      TEXT DEFAULT CURRENT_TIMESTAMP
+        created_at      TEXT DEFAULT CURRENT_TIMESTAMP,
+        -- new fields
+        mental_capital     INTEGER DEFAULT 100,
+        mental_cap_tick    TEXT DEFAULT CURRENT_TIMESTAMP,
+        is_sitting         INTEGER DEFAULT 1,
+        office_tier        INTEGER DEFAULT 1,
+        gender             TEXT DEFAULT 'man',
+        equipped_outfit    TEXT DEFAULT '{}',
+        owned_clothing     TEXT DEFAULT '[]',
+        unlocked_monopolist INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS alpha_pack_log (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id     INTEGER NOT NULL,
+        item_id     TEXT NOT NULL,
+        rarity      TEXT NOT NULL,
+        bps_spent   INTEGER NOT NULL,
+        rolled_at   TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS progress (
@@ -119,6 +137,31 @@ def init_db():
         UNIQUE(user_id, log_date)
     );
     """)
+    conn.commit()
+
+    # Live migration — add new columns to existing databases
+    # SQLite ALTER TABLE doesn't allow non-constant defaults — add bare column then UPDATE
+    new_cols = [
+        ("mental_capital",      "INTEGER", 100),
+        ("mental_cap_tick",     "TEXT",    None),
+        ("is_sitting",          "INTEGER", 1),
+        ("office_tier",         "INTEGER", 1),
+        ("gender",              "TEXT",    "man"),
+        ("equipped_outfit",     "TEXT",    "{}"),
+        ("owned_clothing",      "TEXT",    "[]"),
+        ("unlocked_monopolist", "INTEGER", 0),
+    ]
+    cur2 = conn.cursor()
+    cur2.execute("PRAGMA table_info(users)")
+    existing = {row[1] for row in cur2.fetchall()}
+    for col_name, col_type, default_val in new_cols:
+        if col_name not in existing:
+            cur2.execute(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}")
+            if default_val is not None:
+                cur2.execute(
+                    f"UPDATE users SET {col_name} = ? WHERE {col_name} IS NULL",
+                    (default_val,)
+                )
     conn.commit()
     conn.close()
 
@@ -509,6 +552,94 @@ def log_streak_day(user_id: int, log_date: str = None):
     conn.close()
 
 
+def get_owned_clothing(user: dict) -> list:
+    import json as _j
+    try:
+        return _j.loads(user.get("owned_clothing") or "[]")
+    except Exception:
+        return []
+
+
+def get_equipped_outfit(user: dict) -> dict:
+    import json as _j
+    try:
+        return _j.loads(user.get("equipped_outfit") or "{}")
+    except Exception:
+        return {}
+
+
+def add_clothing_item(user_id: int, item_id: str):
+    import json as _j
+    user = get_user(user_id)
+    owned = get_owned_clothing(user)
+    if item_id not in owned:
+        owned.append(item_id)
+        update_user(user_id, owned_clothing=_j.dumps(owned))
+
+
+def equip_clothing_item(user_id: int, slot: str, item_id: Optional[str]):
+    """Equip (or unequip if item_id is None) a clothing slot."""
+    import json as _j
+    user = get_user(user_id)
+    outfit = get_equipped_outfit(user)
+    if item_id is None:
+        outfit.pop(slot, None)
+    else:
+        outfit[slot] = item_id
+    update_user(user_id, equipped_outfit=_j.dumps(outfit))
+
+
+def tick_mental_capital(user_id: int):
+    """Restore mental capital based on elapsed time (+5 per 15 min, max 100)."""
+    from datetime import datetime as _dt
+    user = get_user(user_id)
+    if not user:
+        return
+    current = user.get("mental_capital", 100)
+    if current >= 100:
+        return
+    last_tick_str = user.get("mental_cap_tick") or str(_dt.now())
+    try:
+        last_tick = _dt.fromisoformat(last_tick_str)
+    except Exception:
+        last_tick = _dt.now()
+    elapsed_minutes = (_dt.now() - last_tick).total_seconds() / 60
+    ticks = int(elapsed_minutes // 15)
+    if ticks > 0:
+        new_cap = min(100, current + ticks * 5)
+        update_user(user_id, mental_capital=new_cap,
+                    mental_cap_tick=str(_dt.now()))
+
+
+def drain_mental_capital(user_id: int, amount: int = 10):
+    user = get_user(user_id)
+    if not user:
+        return 0
+    new_val = max(0, user.get("mental_capital", 100) - amount)
+    update_user(user_id, mental_capital=new_val)
+    return new_val
+
+
+def restore_mental_capital(user_id: int, amount: int = 50):
+    user = get_user(user_id)
+    if not user:
+        return 100
+    new_val = min(100, user.get("mental_capital", 100) + amount)
+    update_user(user_id, mental_capital=new_val)
+    return new_val
+
+
+def log_alpha_pack(user_id: int, item_id: str, rarity: str, bps_spent: int):
+    conn = _get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO alpha_pack_log (user_id, item_id, rarity, bps_spent) VALUES (?,?,?,?)",
+        (user_id, item_id, rarity, bps_spent)
+    )
+    conn.commit()
+    conn.close()
+
+
 def get_streak_log(user_id: int, year: int, month: int) -> set:
     conn = _get_connection()
     cur = conn.cursor()
@@ -560,16 +691,29 @@ def apply_admin_perks(user_id: int, lessons: dict = None):
         "cosmetic": "vest",
     })
 
+    # Grant all clothing items too
+    from gamification import CLOTHING_ITEMS as _CI
+    all_clothing = [c["id"] for c in _CI]
+
     update_user(
         user_id,
-        xp              = max_xp,
-        bps             = 9_999_999,
-        level           = max_level,
-        title           = max_title,
-        streak          = 365,
-        streak_freeze   = streak_freezes,
-        owned_cosmetics = _json.dumps(all_cosmetics),
-        equipped        = equipped,
+        xp               = max_xp,
+        bps              = 9_999_999,
+        level            = max_level,
+        title            = max_title,
+        streak           = 365,
+        streak_freeze    = streak_freezes,
+        owned_cosmetics  = _json.dumps(all_cosmetics),
+        equipped         = equipped,
+        mental_capital   = 100,
+        office_tier      = 4,
+        owned_clothing   = _json.dumps(all_clothing),
+        unlocked_monopolist = 1,
+        equipped_outfit  = _json.dumps({
+            "Jacket": "monopolist_blazer", "Shirt": "royal_oxford",
+            "Accessory": "titan_tie",      "Pants": "custom_trousers",
+            "Shoes": "cj_captoes",
+        }),
     )
 
     # Mark all loaded lessons complete at 100%

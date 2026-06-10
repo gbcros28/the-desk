@@ -24,6 +24,8 @@ def render_question(q: dict, key_prefix: str = "") -> tuple:
         return _matching(q, key)
     elif qt == "free_response":
         return _free_response(q, key)
+    elif qt == "linked_statements":
+        return _linked_statements(q, key)
     else:
         st.warning(f"Unknown question type: {qt}")
         return False, False, "wrong"
@@ -215,3 +217,141 @@ def _free_response(q, key):
     outcome = st.session_state[rated_key]
     correct = outcome in ("good", "easy")
     return True, correct, outcome
+
+
+# ── 3-Statement Linked Sandbox ─────────────────────────────────────────────
+
+def _validate_accounting_transaction(user_inputs: dict, expected: dict, tol: float = 0.5) -> dict:
+    """
+    Validate a set of accounting inputs against expected deltas.
+    Also enforces the Balance Sheet equation: ΔAssets == ΔLiabilities + ΔEquity.
+    Returns {field: (user_val, expected_val, ok), ..., 'bs_check': bool, 'all_correct': bool}
+    """
+    results = {}
+    for field, exp_val in expected.items():
+        user_val = float(user_inputs.get(field, 0))
+        ok = abs(user_val - exp_val) <= tol
+        results[field] = (user_val, exp_val, ok)
+
+    # Balance sheet assertion: ΔTotal_Assets == ΔTotal_Liabilities + ΔRetained_Earnings
+    da  = user_inputs.get("Delta_Total_Assets", 0)
+    dl  = user_inputs.get("Delta_Total_Liabilities", 0)
+    dre = user_inputs.get("Delta_Retained_Earnings", 0)
+    bs_ok = abs(float(da) - (float(dl) + float(dre))) <= tol
+    results["_bs_check"] = (float(da), float(dl) + float(dre), bs_ok)
+
+    results["_all_correct"] = all(v[2] for k, v in results.items() if k.startswith("_") is False) and bs_ok
+    return results
+
+
+def _linked_statements(q: dict, key: str):
+    """
+    Renders an interactive 3-statement sandbox question.
+    q must have:
+      prompt, scenario (str), fields (list of {id, label, statement}),
+      expected (dict {field_id: delta_value}), explanation, tolerance (float, optional)
+    """
+    submitted_key = f"{key}_submitted"
+    tol = float(q.get("tolerance", 0.5))
+
+    scenario = q.get("scenario", "")
+    fields   = q.get("fields", [])   # [{id, label, statement: IS/CFS/BS}]
+
+    if scenario:
+        st.markdown(
+            f'<div style="background:#1a2030;border-left:3px solid #4a8fe8;'
+            f'padding:10px 14px;border-radius:4px;margin:8px 0;font-size:13px">'
+            f'📋 <b>Scenario:</b> {scenario}</div>',
+            unsafe_allow_html=True
+        )
+
+    # Group by statement
+    statements = {"IS": [], "CFS": [], "BS": []}
+    for f in fields:
+        stmt = f.get("statement", "BS")
+        statements.setdefault(stmt, []).append(f)
+
+    if submitted_key not in st.session_state:
+        user_inputs = {}
+
+        st.markdown("*Enter the **change (Δ)** in each line item caused by the scenario:*")
+
+        for stmt_id, stmt_name, stmt_color in [
+            ("IS",  "Income Statement",      "#4a8fe8"),
+            ("CFS", "Cash Flow Statement",   "#8ab44a"),
+            ("BS",  "Balance Sheet",         "#c8a428"),
+        ]:
+            stmt_fields = statements.get(stmt_id, [])
+            if not stmt_fields:
+                continue
+            st.markdown(
+                f'<div style="color:{stmt_color};font-weight:600;margin-top:12px;'
+                f'font-size:13px;border-bottom:1px solid {stmt_color}44;padding-bottom:4px">'
+                f'{stmt_name}</div>',
+                unsafe_allow_html=True
+            )
+            for f in stmt_fields:
+                val = st.number_input(
+                    f['label'], key=f"{key}_field_{f['id']}",
+                    value=0.0, format="%.2f",
+                    help=f"Enter the delta (positive = increase, negative = decrease)"
+                )
+                user_inputs[f["id"]] = val
+
+        # BS balance check note
+        st.caption("💡 Reminder: ΔAssets must equal ΔLiabilities + ΔRetained Earnings")
+
+        if st.button("Submit", key=f"{key}_btn"):
+            # Collect current values from session state
+            collected = {}
+            for f in fields:
+                collected[f["id"]] = st.session_state.get(f"{key}_field_{f['id']}", 0.0)
+            st.session_state[submitted_key] = collected
+            st.rerun()
+        return False, False, ""
+
+    # ── Show graded results ────────────────────────────────────────────────
+    user_inputs = st.session_state[submitted_key]
+    expected    = q.get("expected", {})
+    results     = _validate_accounting_transaction(user_inputs, expected, tol)
+
+    all_correct = results.pop("_all_correct", False)
+    bs_check    = results.pop("_bs_check", (0, 0, True))
+
+    for stmt_id, stmt_name, stmt_color in [
+        ("IS",  "Income Statement",      "#4a8fe8"),
+        ("CFS", "Cash Flow Statement",   "#8ab44a"),
+        ("BS",  "Balance Sheet",         "#c8a428"),
+    ]:
+        stmt_fields = [f for f in fields if f.get("statement") == stmt_id]
+        if not stmt_fields:
+            continue
+        st.markdown(
+            f'<div style="color:{stmt_color};font-weight:600;margin-top:12px">{stmt_name}</div>',
+            unsafe_allow_html=True
+        )
+        for f in stmt_fields:
+            fid = f["id"]
+            if fid not in results:
+                continue
+            user_val, exp_val, ok = results[fid]
+            icon = "✅" if ok else "❌"
+            st.markdown(
+                f'{icon} **{f["label"]}**: you entered **{user_val:+.2f}**, '
+                f'correct: **{exp_val:+.2f}**'
+            )
+
+    # BS balance assertion
+    bs_icon = "✅" if bs_check[2] else "❌"
+    st.markdown(
+        f'{bs_icon} **Balance Sheet Check**: ΔAssets ({bs_check[0]:+.2f}) '
+        f'= ΔLiab + ΔEquity ({bs_check[1]:+.2f})'
+    )
+
+    if all_correct:
+        st.success("✅ All statements balance correctly!")
+    else:
+        st.error("❌ Some entries need correction — review the deltas above.")
+
+    st.info(f"**Explanation:** {q['explanation']}")
+    return True, all_correct, "correct" if all_correct else "wrong"

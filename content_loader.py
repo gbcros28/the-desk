@@ -18,7 +18,8 @@ CONTENT_DIR = Path(__file__).parent / "content"
 
 VALID_SECTION_TYPES    = {"text", "callout", "formula"}
 VALID_CALLOUT_VARIANTS = {"interview_trap", "key_insight", "watch_out"}
-VALID_QUESTION_TYPES   = {"mcq", "numeric", "fill_blank", "ordering", "matching", "free_response"}
+VALID_QUESTION_TYPES   = {"mcq", "numeric", "fill_blank", "ordering", "matching",
+                          "free_response", "linked_statements"}
 
 
 class ContentError(Exception):
@@ -114,6 +115,9 @@ def validate_lesson(data: dict, label: str) -> dict:
         elif qt == "free_response":
             _require(q, "model_answer", qlabel, str)
             _require(q, "rubric", qlabel, list)
+        elif qt == "linked_statements":
+            _require(q, "fields", qlabel, list)
+            _require(q, "expected", qlabel, dict)
 
     cr = _require(data, "completion_reward", label, dict)
     _require(cr, "title", f"{label} completion_reward", str)

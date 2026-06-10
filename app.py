@@ -15,6 +15,9 @@ from components.stock_pitch import render_stock_pitch
 from components.content_upload import render_content_upload
 from components.placement import render_placement, should_show_placement
 from components.desk_scene import render_desk_scene
+from components.office_view import render_office_view
+from components.wardrobe import render_wardrobe
+from components.alpha_pack import render_alpha_pack
 from components.calendar_view import render_calendar
 from components.todo import render_todo
 
@@ -132,11 +135,39 @@ tab_learn, tab_practice, tab_tools, tab_me = st.tabs([
     "👤  Me",
 ])
 
+def _render_decoration_shop(user):
+    import gamification as _gam
+    owned_cos = _gam.get_owned_cosmetics(user)
+    for item in _gam.DECORATION_ITEMS:
+        owned = item["id"] in owned_cos
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown(f"**{item['name']}** — {item['cost']} bps")
+            st.caption(item["desc"])
+        with col2:
+            if owned:
+                st.success("Owned", icon="✓")
+            elif st.button(f"Buy", key=f"deco_{item['id']}"):
+                ok, msg = _gam.buy_item(user["user_id"], item["id"])
+                st.success(msg) if ok else st.error(msg)
+                st.rerun()
+
+
 # ── Learn tab ─────────────────────────────────────────────────────────────
 with tab_learn:
     active_lesson = st.session_state.get("active_lesson")
 
-    if active_lesson and active_lesson in lessons:
+    # Mental capital gate
+    _mc = user.get("mental_capital", 100)
+    if active_lesson and active_lesson in lessons and _mc == 0:
+        st.error(
+            "**Mental capital is at 0.** You need energy to study. "
+            "Go to **Me → Profile** to buy a coffee or wait for recovery (+5 per 15 min)."
+        )
+        if st.button("← Back to skill tree", key="mc_gate_back"):
+            del st.session_state["active_lesson"]
+            st.rerun()
+    elif active_lesson and active_lesson in lessons:
         if st.button("← Back to skill tree"):
             del st.session_state["active_lesson"]
             st.rerun()
@@ -206,12 +237,22 @@ with tab_me:
     ])
 
     with sub_profile:
-        render_desk_scene(user)
+        render_office_view(user)
         st.markdown("---")
         render_profile(user)
+        # Show wardrobe only when standing
+        if not user.get("is_sitting", 1):
+            st.markdown("---")
+            render_wardrobe(user)
 
     with sub_shop:
-        render_shop(user)
+        shop_tab1, shop_tab2, shop_tab3 = st.tabs(["🛒 Cosmetics", "🎁 Alpha Packs", "🏢 Decorations"])
+        with shop_tab1:
+            render_shop(user)
+        with shop_tab2:
+            render_alpha_pack(user)
+        with shop_tab3:
+            _render_decoration_shop(user)
 
     with sub_upload:
         render_content_upload()
